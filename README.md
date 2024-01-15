@@ -4,9 +4,11 @@
 
 `@jchpro` libraries for Nest.js apps.
 
+This is very much work in progress.
+
 ## Installation
 
-```bash
+```shell
 $ npm install
 ```
 
