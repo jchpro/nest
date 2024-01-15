@@ -1,6 +1,6 @@
 {
   "name": "@jchpro/nest-config",
-  "version": "0.0.1-SNAPSHOT",
+  "version": "0.1.0-SNAPSHOT",
   "description": "Nest.js config utility",
   "private": false,
   "dependencies": {
