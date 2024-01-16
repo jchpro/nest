@@ -5,25 +5,29 @@ import { join } from 'path';
 import { TsConfig } from '../types/ts-config';
 import { exists, readJsonObject } from '../utilities/filesystem';
 
+/**
+ * Represents library defined in the nest-cli.json file.
+ * Resolves absolute paths to the significant file paths and contains loaded TypeScript config excerpt.
+ */
 export class Library {
 
   private constructor(
     readonly name: string,
     readonly config: NestLibrary,
     readonly tsConfig: TsConfig,
-    private readonly root: string
+    private readonly workspaceRoot: string
   ) { }
 
   get rootDir(): string {
-    return join(this.root, this.config.root);
+    return join(this.workspaceRoot, this.config.root);
   }
 
   get sourceRootDir(): string {
-    return join(this.root, this.config.sourceRoot);
+    return join(this.workspaceRoot, this.config.sourceRoot);
   }
 
   get tsConfigPath(): string {
-    return Library.getTsConfigPath(this.rootDir, this.config.compilerOptions.tsConfigPath);
+    return Library.getTsConfigPath(this.workspaceRoot, this.config.compilerOptions.tsConfigPath);
   }
 
   get tsOutDir(): string {
@@ -34,6 +38,9 @@ export class Library {
     return join(this.tsOutDir, `${this.config.entryFile}.js`);
   }
 
+  /**
+   * Returns `package.lib.json` file contents if the file exists.
+   */
   async getLibrarianFile(): Promise<PackageJson | undefined> {
     const path = join(this.rootDir, PACKAGE_LIB_FILE);
     if (await exists(path, 'file')) {
@@ -42,12 +49,15 @@ export class Library {
     return;
   }
 
-  static async init(name: string, config: NestLibrary, rootDir: string): Promise<Library> {
+  /**
+   * Initializes the Library reading the tsconfig file of the library.
+   */
+  static async init(name: string, config: NestLibrary, workspaceRootDir: string): Promise<Library> {
     return new Library(
       name,
       config,
-      await readJsonObject<TsConfig>(Library.getTsConfigPath(rootDir, config.compilerOptions.tsConfigPath)),
-      rootDir
+      await readJsonObject<TsConfig>(Library.getTsConfigPath(workspaceRootDir, config.compilerOptions.tsConfigPath)),
+      workspaceRootDir
     );
   }
 

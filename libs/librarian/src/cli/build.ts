@@ -54,14 +54,15 @@ export async function build(libraryName: string, options: {
 
 function buildLibrary(library: Library, project: Project) {
   return new Promise<void>((resolve, reject) => {
-    const process = spawn(prepareCommand('npx'), [
+    const buildProcess = spawn(prepareCommand('npx'), [
       'nest',
       'build',
       library.name
     ], {
-      cwd: project.rootDir
+      cwd: project.rootDir,
+      stdio: [process.stdin, process.stdout, process.stderr]
     });
-    process.on('close', (code) => {
+    buildProcess.on('close', (code) => {
       if (code === 0) {
         resolve();
         return;

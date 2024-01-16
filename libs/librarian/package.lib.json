@@ -1,0 +1,26 @@
+{
+  "name": "@jchpro/nest-librarian",
+  "version": "0.1.0-SNAPSHOT",
+  "description": "CLI for simplifying Nest.js library publishing",
+  "private": false,
+  "bin": {
+    "nestlib": "./bin.js"
+  },
+  "keywords": [
+    "nest.js",
+    "library",
+    "cli"
+  ],
+  "dependencies": {
+    "commander": "0.0.0",
+    "glob": "0.0.0",
+    "lodash": "0.0.0",
+    "find-package-json": "0.0.0",
+    "semver": "0.0.0"
+  },
+  "devDependencies": {
+    "@types/find-package-json": "0.0.0",
+    "@types/lodash": "0.0.0",
+    "types-package-json": "0.0.0"
+  }
+}

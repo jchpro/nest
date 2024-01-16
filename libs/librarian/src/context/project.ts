@@ -6,6 +6,10 @@ import { NestConfig, NestLibrary } from '../types/nest-config';
 import { exists, readJsonObject } from '../utilities/filesystem';
 import { Library } from './library';
 
+/**
+ * Wrapper around nest-cli.json file, focusing on the libraries defined in the file.
+ * Contains loaded {@link Library}, original nest-cli.json excerpt and few significant file paths.
+ */
 export class Project {
 
   private constructor(
@@ -20,6 +24,9 @@ export class Project {
     return readJsonObject<PackageJson>(this.packageJsonPath);
   }
 
+  /**
+   * Instantiates the Project by finding the nearest package.json (using `find-package-json`) with neighbouring nest-cli.json.
+   */
   static async locate(): Promise<Project> {
     let found: {
       readonly rootDir: string;

@@ -1,19 +1,23 @@
 {
   "name": "@jchpro/nest",
-  "version": "0.0.1-SNAPSHOT",
+  "version": "0.0.0",
   "description": "Nest.js libraries monorepo",
   "author": "https://github.com/jchpro",
   "private": true,
   "license": "LGPL-3.0-only",
+  "homepage": "https://github.com/jchpro/nest",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jchpro/nest"
+    "url": "https://github.com/jchpro/nest.git"
+  },
+  "engines": {
+    "node": ">=16"
   },
   "scripts": {
     "build": "npm run build:config && npm run build:core && npm run build:librarian",
-    "build:config": "npm run cli:librarian -- build config -a *.md -r LICENSE -m author license repository",
+    "build:config": "npm run cli:librarian -- build config -a *.md -r LICENSE -m author license homepage repository engines",
     "build:core": "nest build core",
-    "build:librarian": "nest build librarian",
+    "build:librarian": "npm run cli:librarian -- build librarian -a *.md -r LICENSE -m author license homepage repository engines",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

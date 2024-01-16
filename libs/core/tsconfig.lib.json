@@ -3,6 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "removeComments": false,
+    "sourceMap": false,
     "outDir": "../../dist/libs/core"
   },
   "include": ["src/**/*"],
