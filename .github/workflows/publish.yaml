@@ -1,32 +1,32 @@
-name: (testing workflow) Publish library package to NPM
+name: Publish library package to NPM
 on:
-  workflow_dispatch:
-    inputs:
-      tagName:
-        description: This will be a tag name in real workflow
-        required: true
-        type: string
+  release:
+    types:
+      - released
 
 jobs:
   publish:
     name: Build and publish
     runs-on: ubuntu-22.04
     env:
-      BUILD_CONFIG_LIBRARY: ${{ contains(inputs.tagName, 'config') }}
+      BUILD_CONFIG_LIBRARY: ${{ startsWith(github.ref_name, 'config') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-#      - name: Setup Node
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: '16.20.1'
-#          registry-url: 'https://registry.npmjs.org'
-#      - name: Install dependencies
-#        run: npm ci
-      - name: Print variables
-        run: |
-          echo "Tag name: ${{ inputs.tagName }}"
-          echo "Should build config: ${{ env.BUILD_CONFIG_LIBRARY }}"
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.20.1'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: npm ci
       - name: Build config library
-        if: BUILD_CONFIG_LIBRARY
-        run: echo "I'm will build the config library!"
+        id: build_config
+        if: ${{ env.BUILD_CONFIG_LIBRARY }}
+        run: npm run build:config
+      - name: Publish config library
+        if: ${{ steps.build_config.outcome == 'success' }}
+        working-directory: ./dist/libs/config
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

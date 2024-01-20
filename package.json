@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Nest.js libraries monorepo",
   "author": "https://github.com/jchpro",
-  "private": true,
+  "private": false,
   "license": "LGPL-3.0-only",
   "homepage": "https://github.com/jchpro/nest",
   "repository": {
@@ -15,9 +15,9 @@
   },
   "scripts": {
     "build": "npm run build:config && npm run build:core && npm run build:librarian",
-    "build:config": "npm run cli:librarian -- build config -a *.md -r LICENSE -m author license homepage repository engines",
+    "build:config": "npm run cli:librarian -- build config -a *.md -r LICENSE -m author license homepage repository publishConfig engines",
     "build:core": "nest build core",
-    "build:librarian": "npm run cli:librarian -- build librarian -a *.md -r LICENSE -m author license homepage repository engines",
+    "build:librarian": "npm run cli:librarian -- build librarian -a *.md -r LICENSE -m author license homepage repository publishConfig engines",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -30,6 +30,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/nest/test/jest-e2e.json",
     "cli:librarian": "ts-node --project ./libs/librarian/tsconfig.lib.json ./libs/librarian/src/bin.ts"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.0",
