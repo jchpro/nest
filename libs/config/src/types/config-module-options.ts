@@ -7,7 +7,7 @@ export interface ConfigModuleOptions {
 
   /**
    * Array of config classes on which environment variables mapping and validation will be run.
-   * These classes will provided by the {@link ConfigModule} and thus available globally in the app.
+   * These classes will be provided by the {@link ConfigModule} and thus available globally in the app.
    */
   readonly classes: Type<any>[];
 
@@ -30,5 +30,5 @@ export interface ConfigModuleOptions {
   /**
    * Error to throw when validation of the config object fails.
    */
-  readonly errorFactory?: (validationErrors: ValidationError[]) => Error;
+  readonly errorFactory?: (validationErrors: ValidationError[]) => any;
 }

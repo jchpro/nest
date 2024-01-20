@@ -22,4 +22,7 @@ program
 
 // Parse and run CLI
 program.parseAsync()
-  .catch(err => console.error(err));
+  .catch(err => {
+    console.error(err);
+    process.exit(1);
+  });

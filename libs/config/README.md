@@ -1,4 +1,6 @@
-# Nest.js config utility
+# Nest.js config loading utility
+
+Yet another way of loading config in Nest.js.
 
 ## Description
 
@@ -117,9 +119,3 @@ async function bootstrap() {
 }
 bootstrap();
 ```
-
-## Limitations
-
-### Dependency injection
-
-Config classes are injectable, but can't use dependency injection themselves.

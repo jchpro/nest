@@ -25,7 +25,6 @@ export async function exists(path: string, expect?: 'file' | 'dir'): Promise<boo
     }
     return true;
   } catch (err: unknown) {
-    console.log(err);
     return false;
   }
 }
