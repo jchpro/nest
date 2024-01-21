@@ -4,7 +4,7 @@
     "declaration": true,
     "removeComments": false,
     "sourceMap": false,
-    "outDir": "../../dist/libs/core"
+    "outDir": "../../dist/libs/common"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]

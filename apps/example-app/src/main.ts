@@ -1,5 +1,5 @@
 import { ConfigResolver } from '@jchpro/nest-config';
-import { LoggerFactory, LogLevels } from '@jchpro/nest-core';
+import { LoggerFactory, LogLevels } from '@jchpro/nest-common';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';

@@ -8,7 +8,7 @@ The CLI is a simple wrapper around Nest's build command, performing some common 
 
 Exported components might help you with building your own Nest CLIs.
 
-### Installation
+## Installation
 
 ```shell
 npm i -D @jchpro/nest-librarian

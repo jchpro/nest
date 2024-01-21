@@ -5,20 +5,8 @@ import { NEST_FILE } from '../consts';
 let readFileResult: string | undefined;
 let existsResult: boolean = true;
 
-const captures = {
-  readFile: (...args: any[]) => {},
-} as const;
-
-// I wasn't able to work with spies on `fs/promises` any other way :|
-function capture(method: keyof typeof captures, fn: (...args: any[]) => any) {
-  return (...args: any[]) => {
-    captures[method](...args);
-    return fn(...args);
-  };
-}
-
 jest.mock('fs/promises', () => ({
-  readFile: capture('readFile', () => Promise.resolve(readFileResult)),
+  readFile: () => Promise.resolve(readFileResult),
   stat: () => existsResult ? Promise.resolve({
     isFile: () => true
   }) : Promise.reject('nope')
@@ -50,6 +38,7 @@ jest.mock('find-package-json', () => {
 
 describe('Project', () => {
   let project: Project;
+  let mockFs: any;
 
   function getNestConfig(): NestConfig {
     return {
@@ -74,6 +63,7 @@ describe('Project', () => {
   }
 
   beforeEach(async () => {
+    mockFs = jest.requireMock('fs/promises');
     iteratorDone = false;
     readFileResult = JSON.stringify(getNestConfig());
     project = await Project.locate();
@@ -87,7 +77,7 @@ describe('Project', () => {
   it('should read package.json from the resolved path', async () => {
     // Given
     readFileResult = `{"version":"0.0.0"}`;
-    const fsSpy = jest.spyOn(captures, 'readFile');
+    const fsSpy = jest.spyOn(mockFs, 'readFile');
 
     // When
     const json = await project.getPackageJson();
