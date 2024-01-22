@@ -1,6 +1,6 @@
 import { LogLevel } from '@nestjs/common';
-import { LogLevels } from '@jchpro/nest-core';
 import { LoggerFactory } from './logger.factory';
+import { LogLevels } from '../consts/log-levels';
 
 describe('LoggerFactory', () => {
   it('should produce DEBUG log levels for `LogLevels.DEBUG`', () => {

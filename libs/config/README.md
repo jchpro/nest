@@ -1,4 +1,4 @@
-# Nest.js config loading utility
+# Config loading utility for Nest.js
 
 Yet another way of loading config in Nest.js.
 
@@ -11,6 +11,17 @@ Basically it does three things:
 - reads config from environment variables just like [Nest's `ConfigModule` would](https://docs.nestjs.com/techniques/configuration#getting-started);
 - with help from `class-transformer` creates strongly-typed, injectable class instances with properties mapped from environment variables;
 - using the power of `class-validator` validates these variables.
+
+## Installation
+
+Required peer dependencies are:
+
+- `@nestjs/common`
+- `@nestjs/config`
+
+```shell
+npm i @jchpro/nest-config
+```
 
 ## Usage
 

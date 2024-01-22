@@ -3,34 +3,23 @@ import { Library } from './library';
 let readFileResult: string | undefined;
 let existsResult: boolean = false;
 
-const captures = {
-  readFile: (...args: any[]) => {},
-  join: (...args: any[]) => {},
-} as const;
-
-// I wasn't able to work with spies on `fs/promises` any other way :|
-function capture(method: keyof typeof captures, fn: (...args: any[]) => any) {
-  return (...args: any[]) => {
-    captures[method](...args);
-    return fn(...args);
-  };
-}
-
 jest.mock('fs/promises', () => ({
-  readFile: capture('readFile', () => Promise.resolve(readFileResult)),
+  readFile: () => Promise.resolve(readFileResult),
   stat: () => existsResult ? Promise.resolve({
     isFile: () => true
   }) : Promise.reject('nope')
 }))
 
 jest.mock('path', () => ({
-  join: capture('join', (...args: any[]) => args.join('')),
+  join: (...args: any[]) => args.join(''),
 }))
 
 describe('Library', () => {
   let library: Library;
+  let mockPath: any;
 
   beforeEach(async () => {
+    mockPath = jest.requireMock('path');
     readFileResult = `{"compilerOptions":{"outDir":"/dist/myLib"}}`;
     library = await Library.init(
       'myLib',
@@ -53,9 +42,9 @@ describe('Library', () => {
     expect(library).toBeTruthy();
   });
 
-  it('should return all directory paths while calling `fs` join', () => {
+  it('should return all directory paths while calling `path` join', () => {
     // Given
-    const fsSpy = jest.spyOn(captures, 'join');
+    const fsSpy = jest.spyOn(mockPath, 'join');
 
     // Then
     expect(library.rootDir).toEqual("/root/myLib");
