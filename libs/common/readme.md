@@ -18,9 +18,14 @@ Required peer dependencies are:
 npm i @jchpro/nest-common
 ```
 
+:warning: Functionalities might require additional peer dependencies, please refer to the specific functionality documentation. 
+
 ## Usage
 
 What do you need?
 
-- [Logger](./docs/LOGGER.md) - quick setup of the simplest Nest.js logger
+- [Logger](./docs/logger) - quick setup of the simplest Nest.js logger
+- [Request logger](./docs/request-logger) - quick setup of the `morgan` request logger
+- [Exceptions handler](./docs/exceptions.md) - global exceptions handler
+- [OpenAPI utils](./docs/openapi.md) - quick setup of the Swagger UI, few other utilities
 
