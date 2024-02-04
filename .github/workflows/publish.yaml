@@ -9,6 +9,7 @@ jobs:
     name: Build and publish
     runs-on: ubuntu-22.04
     env:
+      BUILD_COMMON_LIBRARY: ${{ startsWith(github.ref_name, 'common') }}
       BUILD_CONFIG_LIBRARY: ${{ startsWith(github.ref_name, 'config') }}
       BUILD_LIBRARIAN_LIBRARY: ${{ startsWith(github.ref_name, 'librarian') }}
     steps:
@@ -23,8 +24,19 @@ jobs:
         run: npm ci
       - name: Print what should happen
         run: |
+          echo "Should build & publish common library: ${{ env.BUILD_COMMON_LIBRARY }}"
           echo "Should build & publish config library: ${{ env.BUILD_CONFIG_LIBRARY }}"
           echo "Should build & publish librarian library: ${{ env.BUILD_LIBRARIAN_LIBRARY }}"
+      - name: Build common library
+        id: build_common
+        if: ${{ env.BUILD_COMMON_LIBRARY == 'true' }}
+        run: npm run build:common
+      - name: Publish common library
+        if: ${{ steps.build_common.outcome == 'success' }}
+        working-directory: ./dist/libs/common
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Build config library
         id: build_config
         if: ${{ env.BUILD_CONFIG_LIBRARY == 'true' }}

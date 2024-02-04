@@ -6,8 +6,8 @@
 
 ## Libraries
 
-- `@jchpro/nest-config` [Nest.js config loading utility](/libs/config/README.md)
-- `@jchpro/nest-librarian` [CLI for simplifying Nest.js library publishing](/libs/librarian/README.md)
+- `@jchpro/nest-config` [Nest.js config loading utility](/libs/config/readme.md)
+- `@jchpro/nest-librarian` [CLI for simplifying Nest.js library publishing](/libs/librarian/readme.md)
 
 ## Installation
 
