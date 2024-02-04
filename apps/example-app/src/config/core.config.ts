@@ -1,6 +1,6 @@
 import { EnvProperty } from '@jchpro/nest-config';
 import { IsEnum, IsNumber } from 'class-validator';
-import { Environment } from '../core/environment.enum';
+import { Environment } from '../core/enums/environment.enum';
 
 export class CoreConfig {
 

@@ -14,9 +14,9 @@
     "node": ">=16"
   },
   "scripts": {
-    "build": "npm run build:config && npm run build:core && npm run build:librarian",
+    "build": "npm run build:common && npm run build:config && npm run build:librarian",
+    "build:common": "npm run cli:librarian -- build common -a **/*.md -r LICENSE -m author license homepage repository publishConfig engines",
     "build:config": "npm run cli:librarian -- build config -a *.md -r LICENSE -m author license homepage repository publishConfig engines",
-    "build:core": "nest build core",
     "build:librarian": "npm run cli:librarian -- build librarian -a *.md -r LICENSE -m author license homepage repository publishConfig engines",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
@@ -39,8 +39,10 @@
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.3.0",
     "@nestjs/platform-express": "^10.3.0",
+    "@nestjs/swagger": "^7.2.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "morgan": "^1.10.0",
     "reflect-metadata": "^0.1.14",
     "rxjs": "^7.8.1"
   },
@@ -52,6 +54,7 @@
     "@types/find-package-json": "^1.2.6",
     "@types/jest": "^29.5.11",
     "@types/lodash": "^4.14.202",
+    "@types/morgan": "^1.9.9",
     "@types/node": "^20.11.0",
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
@@ -95,8 +98,8 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
+      "^@jchpro/nest-common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@jchpro/nest-config(|/.*)$": "<rootDir>/libs/config/src/$1",
-      "^@jchpro/nest-core(|/.*)$": "<rootDir>/libs/core/src/$1",
       "^@jchpro/nest-librarian(|/.*)$": "<rootDir>/libs/librarian/src/$1"
     }
   }

@@ -1,7 +1,7 @@
 {
   "name": "@jchpro/nest-config",
   "version": "0.1.0-SNAPSHOT",
-  "description": "Nest.js config loading utility",
+  "description": "Config loading utility for Nest.js",
   "private": false,
   "keywords": [
     "nest.js",

@@ -1,0 +1,36 @@
+{
+  "name": "@jchpro/nest-common",
+  "version": "0.1.0-SNAPSHOT",
+  "description": "Common parts for the Nest.js apps",
+  "private": false,
+  "keywords": [
+    "nest.js",
+    "utilities",
+    "node"
+  ],
+  "dependencies": {
+    "class-transformer": "0.0.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "0.0.0",
+    "@nestjs/core": "0.0.0",
+    "@nestjs/swagger": "0.0.0",
+    "morgan": "0.0.0"
+  },
+  "devDependencies": {
+    "@types/morgan": "0.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@nestjs/swagger": {
+      "optional": true
+    },
+    "morgan": {
+      "optional": true
+    }
+  },
+  "exports": {
+    ".": "./index.js",
+    "./request-logger": "./request-logger/index.js",
+    "./openapi": "./openapi/index.js"
+  }
+}

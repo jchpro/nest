@@ -18,11 +18,17 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
+      "@jchpro/nest-common": [
+        "libs/common/src"
+      ],
+      "@jchpro/nest-common/request-logger": [
+        "libs/common/src/request-logger"
+      ],
+      "@jchpro/nest-common/openapi": [
+        "libs/common/src/openapi"
+      ],
       "@jchpro/nest-config": [
         "libs/config/src"
-      ],
-      "@jchpro/nest-core": [
-        "libs/core/src"
       ],
       "@jchpro/nest-librarian": [
         "libs/librarian/src"

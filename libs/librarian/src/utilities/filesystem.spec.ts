@@ -3,39 +3,24 @@ import { copyFiles, createPaths, exists, FileCopyInstruction, readJsonObject, wr
 let failStat = false;
 let statResult: 'file' | 'dir' = 'file';
 
-const fsCaptures = {
-  readFile: (...args: any[]) => {},
-  writeFile: (...args: any[]) => {},
-  stat: (...args: any[]) => {},
-  copyFile: (...args: any[]) => {},
-  mkdir: (...args: any[]) => {},
-} as const;
-
-// I wasn't able to work with spies on `fs/promises` any other way :|
-function capture(method: keyof typeof fsCaptures, fn: (...args: any[]) => any) {
-  return (...args: any[]) => {
-    fsCaptures[method](...args);
-    return fn(...args);
-  };
-}
-
 jest.mock('fs/promises', () => ({
-  readFile: capture('readFile', () => Promise.resolve(`{"hello": "world"}`)),
-  writeFile: capture('writeFile', () => Promise.resolve()),
-  stat: capture('stat', () => failStat ? Promise.reject('error')
-                                        : Promise.resolve({
+  readFile: () => Promise.resolve(`{"hello": "world"}`),
+  writeFile: () => Promise.resolve(),
+  stat: () => failStat ? Promise.reject('error')
+                       : Promise.resolve({
       isFile: () => statResult === 'file',
       isDirectory: () => statResult === 'dir'
-    })),
-  copyFile: capture('copyFile', () => Promise.resolve()),
-  mkdir: capture('mkdir', (dir: string) => Promise.resolve(dir))
+    }),
+  copyFile: () => Promise.resolve(),
+  mkdir: (dir: string) => Promise.resolve(dir)
 }))
 
 describe('filesystem.readJsonObject', () => {
 
   it('should call `fs` method and parse returned contents as json', async () => {
     // Given
-    const fsSpy = jest.spyOn(fsCaptures, 'readFile');
+    const mockFs = jest.requireMock('fs/promises');
+    const fsSpy = jest.spyOn(mockFs, 'readFile');
 
     // When
     const results = await readJsonObject('/mock.json');
@@ -49,10 +34,15 @@ describe('filesystem.readJsonObject', () => {
 
 describe('filesystem.writeJsonObject', () => {
   const path = '/mock.json';
+  let mockFs: any;
+
+  beforeEach(() => {
+    mockFs = jest.requireMock('fs/promises');
+  });
 
   it('should call `fs` method passing stringified json', async () => {
     // Given
-    const fsSpy = jest.spyOn(fsCaptures, 'writeFile');
+    const fsSpy = jest.spyOn(mockFs, 'writeFile');
 
     // When
     await writeJsonObject(path, { hello: 'world' });
@@ -63,7 +53,7 @@ describe('filesystem.writeJsonObject', () => {
 
   it('should stringify object with indentation set to 4', async () => {
     // Given
-    const fsSpy = jest.spyOn(fsCaptures, 'writeFile');
+    const fsSpy = jest.spyOn(mockFs, 'writeFile');
 
     // When
     await writeJsonObject(path, { hello: 'world' }, 4);
@@ -77,16 +67,18 @@ describe('filesystem.writeJsonObject', () => {
 describe('filesystem.exists', () => {
   const path = '/mock.json';
   let existsExpect: 'file' | 'dir' | undefined;
+  let mockFs: any;
 
   beforeEach(() => {
     existsExpect = undefined;
     failStat = false;
     statResult = 'file';
+    mockFs = jest.requireMock('fs/promises');
   });
 
   it('should call `fs` method and successfully stat file', async () => {
     // Given
-    const fsSpy = jest.spyOn(fsCaptures, 'stat');
+    const fsSpy = jest.spyOn(mockFs, 'stat');
     existsExpect = 'file';
     failStat = false;
     statResult = 'file';
@@ -101,7 +93,7 @@ describe('filesystem.exists', () => {
 
   it('should call `fs` method and successfully stat directory', async () => {
     // Given
-    const fsSpy = jest.spyOn(fsCaptures, 'stat');
+    const fsSpy = jest.spyOn(mockFs, 'stat');
     existsExpect = 'dir';
     failStat = false;
     statResult = 'dir';
@@ -116,7 +108,7 @@ describe('filesystem.exists', () => {
 
   it('should call `fs` method and fail to stat entity', async () => {
     // Given
-    const fsSpy = jest.spyOn(fsCaptures, 'stat');
+    const fsSpy = jest.spyOn(mockFs, 'stat');
     failStat = true;
 
     // When
@@ -129,7 +121,7 @@ describe('filesystem.exists', () => {
 
   it('should call `fs` method and successfully stat, but return `false` due to mismatched entity type', async () => {
     // Given
-    const fsSpy = jest.spyOn(fsCaptures, 'stat');
+    const fsSpy = jest.spyOn(mockFs, 'stat');
     existsExpect = 'file';
     failStat = false;
     statResult = 'dir';
@@ -149,7 +141,8 @@ describe('filesystem.copyFiles', () => {
 
   it('should call `fs` method with all provided paths from instructions', async () => {
     // Given
-    const fsSpy = jest.spyOn(fsCaptures, 'copyFile');
+    const mockFs = jest.requireMock('fs/promises');
+    const fsSpy = jest.spyOn(mockFs, 'copyFile');
     const instructions: FileCopyInstruction[] = [
       { from: 'source_1', to: 'target_1' },
       { from: 'source_2', to: 'target_2' },
@@ -170,7 +163,8 @@ describe('filesystem.createPaths', () => {
 
   it('should call `fs` method with all provided paths and recursive option', async () => {
     // Given
-    const fsSpy = jest.spyOn(fsCaptures, 'mkdir');
+    const mockFs = jest.requireMock('fs/promises');
+    const fsSpy = jest.spyOn(mockFs, 'mkdir');
     const dirs: string[] = ['dir_1', 'dir_2'];
 
     // When

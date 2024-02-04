@@ -1,9 +1,12 @@
+import { CommonExceptionHandlerBehaviorHttp, GlobalExceptionHandler, LoggerFactory, LogLevels } from '@jchpro/nest-common';
+import { SwaggerUiFactory } from '@jchpro/nest-common/openapi';
+import { RequestLoggerFactory } from '@jchpro/nest-common/request-logger';
 import { ConfigResolver } from '@jchpro/nest-config';
-import { LoggerFactory, LogLevels } from '@jchpro/nest-core';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { CoreConfig } from './config/core.config';
+import { OPENAPI_CONFIG } from './config/openapi-config';
 
 async function bootstrap() {
 
@@ -16,8 +19,21 @@ async function bootstrap() {
     logger: LoggerFactory.create(isDev ? LogLevels.DEVELOPMENT : LogLevels.PRODUCTION)
   });
 
-  // Logger
+  // Loggers
+  app.use(RequestLoggerFactory.create(isDev ? 'dev' : 'combined'))
   const logger = new Logger('ExampleApp');
+
+  // Exception filter
+  GlobalExceptionHandler.setup( app, {
+    http: new CommonExceptionHandlerBehaviorHttp(!isDev)
+  });
+
+  // Swagger UI
+  if (isDev) {
+    const swaggerUi = SwaggerUiFactory.create(app, OPENAPI_CONFIG);
+    swaggerUi.serve('docs', { serveDoc: true });
+    logger.log('Serving Swagger UI');
+  }
 
   // Start server
   await app.listen(coreConfig.serverPort);
