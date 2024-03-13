@@ -54,6 +54,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/librarian/tsconfig.lib.json"
       }
+    },
+    "mongoose": {
+      "type": "library",
+      "root": "libs/mongoose",
+      "entryFile": "index",
+      "sourceRoot": "libs/mongoose/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/mongoose/tsconfig.lib.json"
+      }
     }
   }
 }

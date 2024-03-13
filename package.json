@@ -29,7 +29,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/nest/test/jest-e2e.json",
-    "cli:librarian": "ts-node --project ./libs/librarian/tsconfig.lib.json ./libs/librarian/src/bin.ts"
+    "cli:librarian": "ts-node --project ./libs/librarian/tsconfig.lib.json ./libs/librarian/src/bin.ts",
+    "cli:mongo-migrate": "ts-node --project ./libs/mongoose/tsconfig.lib.dev.json ./libs/mongoose/src/migrate-cli/bin.ts"
   },
   "publishConfig": {
     "access": "public"
@@ -38,10 +39,13 @@
     "@nestjs/common": "^10.3.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.3.0",
+    "@nestjs/mongoose": "^10.0.4",
     "@nestjs/platform-express": "^10.3.0",
     "@nestjs/swagger": "^7.2.0",
+    "case-anything": "^2.1.13",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "mongoose": "^8.2.1",
     "morgan": "^1.10.0",
     "reflect-metadata": "^0.1.14",
     "rxjs": "^7.8.1"
@@ -100,7 +104,17 @@
     "moduleNameMapper": {
       "^@jchpro/nest-common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@jchpro/nest-config(|/.*)$": "<rootDir>/libs/config/src/$1",
-      "^@jchpro/nest-librarian(|/.*)$": "<rootDir>/libs/librarian/src/$1"
+      "^@jchpro/nest-librarian(|/.*)$": "<rootDir>/libs/librarian/src/$1",
+      "^@jchpro/nest-mongoose(|/.*)$": "<rootDir>/libs/mongoose/src/$1"
     }
+  },
+  "mongoMigrate": {
+    "projects": {
+      "example-app": {
+        "collector": "app.migrations.ts",
+        "directory": "migrations"
+      }
+    },
+    "default": "example-app"
   }
 }

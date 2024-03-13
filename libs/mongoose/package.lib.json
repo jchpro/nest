@@ -1,0 +1,21 @@
+{
+  "name": "@jchpro/nest-mongoose",
+  "version": "0.1.0-SNAPSHOT",
+  "description": "Mongoose utilities for Nest.js",
+  "private": false,
+  "bin": {
+    "mongo-migrate": "./migrate-cli/bin.js"
+  },
+  "keywords": [
+    "nest.js",
+    "mongoose",
+    "cli"
+  ],
+  "dependencies": {
+    "@jchpro/nest-librarian": "0.2.0",
+    "case-anything": "0.0.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "0.0.0"
+  }
+}
