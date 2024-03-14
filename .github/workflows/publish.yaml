@@ -12,6 +12,7 @@ jobs:
       BUILD_COMMON_LIBRARY: ${{ startsWith(github.ref_name, 'common') }}
       BUILD_CONFIG_LIBRARY: ${{ startsWith(github.ref_name, 'config') }}
       BUILD_LIBRARIAN_LIBRARY: ${{ startsWith(github.ref_name, 'librarian') }}
+      BUILD_MONGOOSE_LIBRARY: ${{ startsWith(github.ref_name, 'mongoose') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -27,6 +28,7 @@ jobs:
           echo "Should build & publish common library: ${{ env.BUILD_COMMON_LIBRARY }}"
           echo "Should build & publish config library: ${{ env.BUILD_CONFIG_LIBRARY }}"
           echo "Should build & publish librarian library: ${{ env.BUILD_LIBRARIAN_LIBRARY }}"
+          echo "Should build & publish mongoose library: ${{ env.BUILD_MONGOOSE_LIBRARY }}"
       - name: Build common library
         id: build_common
         if: ${{ env.BUILD_COMMON_LIBRARY == 'true' }}
@@ -54,6 +56,16 @@ jobs:
       - name: Publish librarian library
         if: ${{ steps.build_librarian.outcome == 'success' }}
         working-directory: ./dist/libs/librarian
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Build mongoose library
+        id: build_mongoose
+        if: ${{ env.BUILD_MONGOOSE_LIBRARY == 'true' }}
+        run: npm run build:mongoose
+      - name: Publish mongoose library
+        if: ${{ steps.build_mongoose.outcome == 'success' }}
+        working-directory: ./dist/libs/mongoose
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

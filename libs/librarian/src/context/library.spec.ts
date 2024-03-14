@@ -14,6 +14,19 @@ jest.mock('path', () => ({
   join: (...args: any[]) => args.join(''),
 }))
 
+jest.mock('child_process', () => ({
+  spawn: () => ({
+    stdout: {
+      on: (evt: string, cb: (data: string) => {}) => {
+        cb('{"compilerOptions": {"outDir": "/dist/myLib"}}');
+      }
+    },
+    on: (evt: string, cb: (code: number) => {}) => {
+      cb(0);
+    }
+  })
+}));
+
 describe('Library', () => {
   let library: Library;
   let mockPath: any;

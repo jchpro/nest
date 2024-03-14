@@ -15,7 +15,7 @@ export async function generate(name: string, options: {
 }) {
 
   // Get Nest project workspace
-  const workspace = await Project.locate();
+  const workspace = await Project.locate(libName => libName === name);
   const nest = workspace.config;
   const migrate = (await workspace.getPackageJson() as {
     mongoMigrate?: MigrateConfig }

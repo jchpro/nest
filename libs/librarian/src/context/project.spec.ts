@@ -36,6 +36,20 @@ jest.mock('find-package-json', () => {
   })
 })
 
+
+jest.mock('child_process', () => ({
+  spawn: () => ({
+    stdout: {
+      on: (evt: string, cb: (data: string) => {}) => {
+        cb('{"compilerOptions": {"outDir": "/dist/myLib"}}');
+      }
+    },
+    on: (evt: string, cb: (code: number) => {}) => {
+      cb(0);
+    }
+  })
+}));
+
 describe('Project', () => {
   let project: Project;
   let mockFs: any;
