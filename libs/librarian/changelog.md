@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## [0.2.0] - 2024-03-16
+
+### Added
+
+- Handling of library cross-referencing after the build
+- `readDirFiles` utility function
+
 ### Changed
 
 - Simplified `fs/promises` mocking in unit tests
