@@ -14,7 +14,7 @@
     "node": ">=16"
   },
   "scripts": {
-    "build": "npm run build:common && npm run build:config && npm run build:librarian",
+    "build": "npm run build:common && npm run build:config && npm run build:librarian && npm run build:mongoose",
     "build:common": "npm run cli:librarian -- build common -a **/*.md -r LICENSE -m author license homepage repository publishConfig engines",
     "build:config": "npm run cli:librarian -- build config -a *.md -r LICENSE -m author license homepage repository publishConfig engines",
     "build:librarian": "npm run cli:librarian -- build librarian -a *.md -r LICENSE -m author license homepage repository publishConfig engines",
