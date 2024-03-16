@@ -3,13 +3,15 @@ import { PackageJson } from 'types-package-json';
 import { AUTO_DEPENDENCY_VERSION, NEST_FILE, PACKAGE_FILE, PACKAGE_LIB_FILE } from '../consts';
 import { Project } from '../context/project';
 import { spawn } from 'child_process';
-import { prepareCommand } from './common';
 import { dirname, join, relative, basename } from 'path';
 import { unlink } from 'fs/promises';
 import { Library } from '../context/library';
+import { DEPENDENCY_SOURCES } from '../utilities/dependencies';
 import { FileCopyInstruction, copyFiles, createPaths, writeJsonObject, exists } from '../utilities/filesystem';
 import { cloneDeep, get, set } from 'lodash';
 import { getCleanSemver } from '../utilities/semver';
+import { prepareCommand } from '../utilities/spawning';
+import { handleCrossReferencing } from './handle-cross-referencing';
 
 export async function build(libraryName: string, options: {
   readonly assets?: string[];
@@ -25,6 +27,9 @@ export async function build(libraryName: string, options: {
   if (!library) {
     throw new Error(`Library with name "${libraryName}" is not defined in ${NEST_FILE}`);
   }
+  if (library.tsConfig?.compilerOptions?.module?.toLowerCase() !== 'commonjs') {
+    throw new Error(`Only "module" option "commonjs" is supported at this time.`);
+  }
   const libJson = await library.getLibrarianFile();
   if (!libJson) {
     throw new Error(`Library doesn't contain ${PACKAGE_LIB_FILE} file.`);
@@ -32,6 +37,9 @@ export async function build(libraryName: string, options: {
 
   // Build
   await buildLibrary(library, project);
+
+  // Handle cross-referencing if necessary
+  await handleCrossReferencing(library, libJson, project);
 
   // Copy assets
   if (options.assets) {
@@ -111,9 +119,7 @@ function prepareLibraryJson(library: Library,
 
   // Prepare
   const outputJson = cloneDeep(libJson);
-  type JsonField = keyof PackageJson;
-  const depSources: JsonField[] = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
-  for (const source of depSources) {
+  for (const source of DEPENDENCY_SOURCES) {
     delete outputJson[source];
   }
 
@@ -123,15 +129,15 @@ function prepareLibraryJson(library: Library,
   }
 
   // Merge paths
-  const safeMergePaths = mergePaths.filter(path => !(depSources as string[]).includes(path));
+  const safeMergePaths = mergePaths.filter(path => !(DEPENDENCY_SOURCES as string[]).includes(path));
   safeMergePaths.forEach(path => {
     set(outputJson, path, get(rootJson, path));
   });
 
   // Resolve dependency versions
-  const allRootsDeps: Record<string, string> = depSources
+  const allRootsDeps: Record<string, string> = DEPENDENCY_SOURCES
     .reduce((obj, source) => ({...obj, ...rootJson[source] as object}), {} as Record<string, string>);
-  for (const source of depSources) {
+  for (const source of DEPENDENCY_SOURCES) {
     if (libJson[source]) {
       outputJson[source] = processDependencies(libJson[source] as Record<string, string>, allRootsDeps, source) as any;
     }

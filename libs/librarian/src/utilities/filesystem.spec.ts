@@ -1,4 +1,4 @@
-import { copyFiles, createPaths, exists, FileCopyInstruction, readJsonObject, writeJsonObject } from './filesystem';
+import { copyFiles, createPaths, exists, FileCopyInstruction, readDirFiles, readJsonObject, writeJsonObject } from './filesystem';
 
 let failStat = false;
 let statResult: 'file' | 'dir' = 'file';
@@ -12,8 +12,14 @@ jest.mock('fs/promises', () => ({
       isDirectory: () => statResult === 'dir'
     }),
   copyFile: () => Promise.resolve(),
-  mkdir: (dir: string) => Promise.resolve(dir)
-}))
+  mkdir: (dir: string) => Promise.resolve(dir),
+  readdir: () => Promise.resolve()
+}));
+
+jest.mock('path', () => ({
+  extname: () => '',
+  resolve: () => ''
+}));
 
 describe('filesystem.readJsonObject', () => {
 
@@ -137,7 +143,6 @@ describe('filesystem.exists', () => {
 });
 
 describe('filesystem.copyFiles', () => {
-  const path = '/mock.json';
 
   it('should call `fs` method with all provided paths from instructions', async () => {
     // Given
@@ -159,7 +164,6 @@ describe('filesystem.copyFiles', () => {
 });
 
 describe('filesystem.createPaths', () => {
-  const path = '/mock.json';
 
   it('should call `fs` method with all provided paths and recursive option', async () => {
     // Given
@@ -173,6 +177,32 @@ describe('filesystem.createPaths', () => {
     // Then
     expect(fsSpy).toHaveBeenCalledWith('dir_1', { recursive: true });
     expect(fsSpy).toHaveBeenCalledWith('dir_2', { recursive: true });
+  });
+
+});
+
+describe('filesystem.readDirFiles', () => {
+
+  it('should call `fs` and `path` methods used internally', async () => {
+    // Given
+    const dir = '/dir';
+    const mockFs = jest.requireMock('fs/promises');
+    const mockPath = jest.requireMock('path');
+    const readdirSpy = jest.spyOn(mockFs, 'readdir')
+      .mockResolvedValue(['file.txt', 'file.md']);
+    const extnameSpy = jest.spyOn(mockPath, 'extname')
+      .mockImplementation((name: string) => name.slice(name.lastIndexOf('.')));
+    const resolveSpy = jest.spyOn(mockPath, 'resolve')
+      .mockImplementation((dir: string, file: string) => `${dir}/${file}`);
+
+    // When
+    await readDirFiles(dir, '.txt');
+
+    // Then
+    expect(readdirSpy).toHaveBeenCalledWith(dir, 'utf-8');
+    expect(extnameSpy).toHaveBeenCalledWith('file.txt');
+    expect(extnameSpy).toHaveBeenCalledWith('file.md');
+    expect(resolveSpy).toHaveBeenCalledWith('/dir', 'file.txt');
   });
 
 });

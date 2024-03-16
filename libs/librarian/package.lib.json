@@ -16,7 +16,8 @@
     "glob": "0.0.0",
     "lodash": "0.0.0",
     "find-package-json": "0.0.0",
-    "semver": "0.0.0"
+    "semver": "0.0.0",
+    "rimraf": "0.0.0"
   },
   "devDependencies": {
     "@types/find-package-json": "0.0.0",

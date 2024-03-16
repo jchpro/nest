@@ -1,5 +1,5 @@
 import { EnvProperty } from '@jchpro/nest-config';
-import { IsEnum, IsNumber } from 'class-validator';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { Environment } from '../core/enums/environment.enum';
 
 export class CoreConfig {
@@ -11,6 +11,10 @@ export class CoreConfig {
   @EnvProperty('PORT')
   @IsNumber()
   readonly serverPort: number;
+
+  @EnvProperty('MONGODB_URI')
+  @IsString()
+  readonly mongodbUri: string;
 
   get isDevelopment(): boolean {
     return this.environment === Environment.DEVELOPMENT;

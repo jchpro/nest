@@ -2,6 +2,7 @@ import { CommonExceptionHandlerBehaviorHttp, GlobalExceptionHandler, LoggerFacto
 import { SwaggerUiFactory } from '@jchpro/nest-common/openapi';
 import { RequestLoggerFactory } from '@jchpro/nest-common/request-logger';
 import { ConfigResolver } from '@jchpro/nest-config';
+import { Migrator } from '@jchpro/nest-mongoose';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -18,6 +19,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: LoggerFactory.create(isDev ? LogLevels.DEVELOPMENT : LogLevels.PRODUCTION)
   });
+
+  // Run database migrations
+  await new Migrator(app).up();
 
   // Loggers
   app.use(RequestLoggerFactory.create(isDev ? 'dev' : 'combined'))

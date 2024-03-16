@@ -32,6 +32,9 @@
       ],
       "@jchpro/nest-librarian": [
         "libs/librarian/src"
+      ],
+      "@jchpro/nest-mongoose": [
+        "libs/mongoose/src"
       ]
     }
   }

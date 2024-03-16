@@ -27,7 +27,7 @@ export class Project {
   /**
    * Instantiates the Project by finding the nearest package.json (using `find-package-json`) with neighbouring nest-cli.json.
    */
-  static async locate(): Promise<Project> {
+  static async locate(libPredicate?: (name: string) => boolean): Promise<Project> {
     let found: {
       readonly rootDir: string;
       readonly nestPath: string;
@@ -57,7 +57,7 @@ export class Project {
       found.nestPath,
       found.packagePath,
       nestConfig,
-      await Project.getLibraries(nestConfig, found.rootDir)
+      await Project.getLibraries(nestConfig, found.rootDir, libPredicate)
     );
   }
 
@@ -72,11 +72,16 @@ export class Project {
     return packages;
   }
 
-  private static async getLibraries(config: NestConfig, rootDir: string): Promise<Library[]> {
+  private static async getLibraries(config: NestConfig,
+                                    rootDir: string,
+                                    predicate?: (name: string) => boolean): Promise<Library[]> {
     const libEntries = Object.entries(config.projects)
       .filter(([, project]) => project.type === 'library');
     const libraries: Library[] = [];
     for (const [name, project] of libEntries) {
+      if (predicate && !predicate(name)) {
+        continue;
+      }
       libraries.push(await Library.init(name, project as NestLibrary, rootDir));
     }
     return libraries;

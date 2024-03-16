@@ -1,4 +1,5 @@
-import { copyFile, mkdir, readFile, stat, writeFile } from 'fs/promises';
+import { copyFile, mkdir, readFile, stat, writeFile, readdir } from 'fs/promises';
+import { extname, resolve } from 'path';
 
 /**
  * Reads file as UTF-8 and parses its contents as JSON, doesn't catch any errors.
@@ -50,4 +51,13 @@ export async function createPaths(directories: string[]): Promise<void> {
   for (const dir of directories) {
     await mkdir(dir, { recursive: true });
   }
+}
+
+/**
+ * Resolves list files with given extension, expanded to absolute paths.
+ */
+export async function readDirFiles(dir: string, ext: string): Promise<string[]> {
+  return (await readdir(dir, 'utf-8'))
+    .filter(name => extname(name) === ext)
+    .map(name => resolve(dir, name));
 }
