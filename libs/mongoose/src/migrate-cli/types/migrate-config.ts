@@ -1,6 +1,7 @@
 export interface MigrateConfig {
   default?: string;
-  projects: Record<string, MigrateProject>;
+  root?: MigrateProject;
+  projects?: Record<string, MigrateProject>;
 }
 
 export interface MigrateProject {

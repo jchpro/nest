@@ -1,9 +1,9 @@
-import { Project, readDirFiles } from '@jchpro/nest-librarian';
+import { NestProject, Project, readDirFiles } from '@jchpro/nest-librarian';
 import { snakeCase } from "case-anything";
 import { LIB_NAME } from "../config";
 import { collectorTemplate } from "../templates/collector";
 import { migrationTemplate } from "../templates/migration";
-import { MigrateConfig } from '../types/migrate-config';
+import { MigrateConfig, MigrateProject } from '../types/migrate-config';
 import { MigrationFile } from "../types/migration-file";
 import { getTimestamp } from "../utilities/datetime";
 import { dirname, basename, sep, posix, relative, resolve } from 'path';
@@ -28,21 +28,36 @@ export async function generate(name: string, options: {
   }
 
   // Get project config
-  const useDefault = !options.project;
-  if (useDefault && !migrate.default) {
-    console.error(`Default project isn't defined in the configuration and project was not provided`);
-    process.exit(1);
-  }
-  const projectName = useDefault ? migrate.default! : options.project;
-  const project = migrate.projects[projectName];
-  const nestProject = nest.projects[projectName];
-  if (!(project && nestProject)) {
-    console.error(`Project "${projectName}" isn't defined in migration or Nest.js configuration`);
-    process.exit(1);
+  let projectName: string | undefined;
+  let project: MigrateProject;
+  let nestProject: NestProject | undefined;
+  if (nest.projects) {
+
+    // Monorepo
+    if (!migrate.projects) {
+      console.error(`There aren't any projects configured, please run 'setup' command first`);
+      process.exit(1);
+    }
+    const useDefault = !options.project;
+    if (useDefault && !migrate.default) {
+      console.error(`Default project isn't defined in the configuration and project was not provided`);
+      process.exit(1);
+    }
+    projectName = useDefault ? migrate.default! : options.project;
+    project = migrate.projects[projectName];
+    nestProject = nest.projects[projectName];
+  } else {
+
+    // Non-monorepo
+    if (!migrate.root) {
+      console.error(`Project in non-monorepo workspace isn't configured, please run 'setup' command first`);
+      process.exit(1);
+    }
+    project = migrate.root;
   }
 
   // Generate migration file
-  const paths = resolveMigrateDirs(workspace.rootDir, nestProject, project);
+  const paths = resolveMigrateDirs(workspace.rootDir, project, nestProject);
   const migrationContent = migrationTemplate(LIB_NAME, name);
   const timestamp = getTimestamp();
   const migrationFilename = `${timestamp}_${snakeCase(name)}.ts`;
