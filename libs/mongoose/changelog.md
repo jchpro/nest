@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## [0.1.1] - 2024-03-17
+
+### Added
+
+- Added missing peer dependencies for Mongoose
+
 ## [0.1.0] - 2024-03-16
 
 ### Added
