@@ -75,6 +75,9 @@ export class Project {
   private static async getLibraries(config: NestConfig,
                                     rootDir: string,
                                     predicate?: (name: string) => boolean): Promise<Library[]> {
+    if (!config.projects) {
+      return [];
+    }
     const libEntries = Object.entries(config.projects)
       .filter(([, project]) => project.type === 'library');
     const libraries: Library[] = [];

@@ -1,6 +1,6 @@
 export interface NestConfig {
   readonly monorepo?: boolean;
-  readonly projects: Record<string, NestProject>;
+  readonly projects?: Record<string, NestProject>;
 }
 
 export interface NestProject {
