@@ -1,6 +1,6 @@
 {
   "name": "@jchpro/nest-librarian",
-  "version": "0.2.0-SNAPSHOT",
+  "version": "0.2.1-SNAPSHOT",
   "description": "CLI for simplifying Nest.js library publishing",
   "private": false,
   "bin": {
