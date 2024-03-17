@@ -1,7 +1,7 @@
-import { MigrationWrapper } from '@jchpro/nest-mongoose';
 import { INestApplication, Logger } from '@nestjs/common';
 import { Connection } from 'mongoose';
 import { MigrateService } from './migrate.service';
+import { MigrationWrapper } from '../types/migrations';
 
 export class Migrator {
 
