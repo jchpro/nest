@@ -24,6 +24,7 @@ npm i @jchpro/nest-common
 
 What do you need?
 
+- [CRUD](./docs/crud.md) - Base CRUD utilities
 - [Logger](./docs/logger.md) - quick setup of the simplest Nest.js logger
 - [Request logger](./docs/request-logger.md) - quick setup of the `morgan` request logger
 - [Exceptions handler](./docs/exceptions.md) - global exceptions handler

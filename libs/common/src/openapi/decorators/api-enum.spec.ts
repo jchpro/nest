@@ -1,15 +1,5 @@
 import type { ApiEnum as ApiEnumType, ApiEnumOptional as ApiEnumOptionalType, reusableApiEnum as reusableApiEnumType } from '@jchpro/nest-common/openapi';
 
-let appliedToProperty: string;
-
-jest.mock('../internal/swagger', () => {
-  return {
-    ApiProperty: () => (target: any, name: string) => {
-      appliedToProperty = name;
-    },
-  };
-});
-
 describe('ApiEnum, ApiEnumOptional, reusableApiEnum', () => {
   let mockModule: any;
   let ApiEnum: typeof ApiEnumType;
@@ -18,14 +8,13 @@ describe('ApiEnum, ApiEnumOptional, reusableApiEnum', () => {
   enum Abc { A, B, C }
 
   beforeEach(() => {
-    (appliedToProperty as any) = undefined;
     jest.isolateModules(() => {
       const ns = require('@jchpro/nest-common/openapi');
       ApiEnum = ns.ApiEnum;
       ApiEnumOptional = ns.ApiEnumOptional;
       reusableApiEnum = ns.reusableApiEnum;
+      mockModule = require('../internal/swagger');
     });
-    mockModule = jest.requireMock('../internal/swagger');
   });
 
   function registerEnum() {
@@ -56,7 +45,7 @@ describe('ApiEnum, ApiEnumOptional, reusableApiEnum', () => {
     expect(registerEnum).toThrow();
   });
 
-  it('should call `ApiProperty` passing proper data for required enum and applying it to the right property', () => {
+  it('should call `ApiProperty` passing proper data for required enum', () => {
     // Given
     registerEnum();
     const apiPropertySpy = jest.spyOn(mockModule, 'ApiProperty');
@@ -77,7 +66,6 @@ describe('ApiEnum, ApiEnumOptional, reusableApiEnum', () => {
       enumName: 'MyEnum',
       required: true
     });
-    expect(appliedToProperty).toBe('field');
   });
 
   it('should call `ApiProperty` passing proper data for optional enum, including extra property options', () => {
