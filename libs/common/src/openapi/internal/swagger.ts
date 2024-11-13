@@ -1,6 +1,7 @@
 import type {
   ApiOkResponse as ApiOkResponseType,
   ApiBadRequestResponse as ApiBadRequestResponseType,
+  ApiForbiddenResponse as ApiForbiddenResponseType,
   ApiProperty as ApiPropertyType,
   ApiPropertyOptional as ApiPropertyOptionalType,
   ApiPropertyOptions,
@@ -12,6 +13,7 @@ import type {
 
 let ApiOkResponse: typeof ApiOkResponseType;
 let ApiBadRequestResponse: typeof ApiBadRequestResponseType;
+let ApiForbiddenResponse: typeof ApiForbiddenResponseType;
 let ApiProperty: typeof ApiPropertyType;
 let ApiPropertyOptional: typeof ApiPropertyOptionalType;
 let ApiTags: typeof ApiTagsType;
@@ -24,6 +26,7 @@ try {
   SwaggerModule = ns.SwaggerModule;
   ApiOkResponse = ns.ApiOkResponse;
   ApiBadRequestResponse = ns.ApiBadRequestResponse;
+  ApiForbiddenResponse = ns.ApiForbiddenResponse;
   ApiTags = ns.ApiTags;
   ApiProperty = ns.ApiProperty;
   ApiPropertyOptional = ns.ApiPropertyOptional;
@@ -38,6 +41,7 @@ export {
   SwaggerModule,
   ApiOkResponse,
   ApiBadRequestResponse,
+  ApiForbiddenResponse,
   ApiTags,
   ApiProperty,
   ApiPropertyOptional,
