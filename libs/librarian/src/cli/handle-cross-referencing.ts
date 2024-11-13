@@ -108,10 +108,11 @@ export async function handleCrossReferencing(library: Library,
 
 async function undoPathAliasingCommonJs(input: { filePath: string; code: string; },
                                         lookupToAlias: Record<string, string>) {
+  let code = input.code;
   for (const [lookup, alias] of Object.entries(lookupToAlias)) {
     const regex = new RegExp('require\\(.+' + lookup + '.+\\)', 'g');
     const replaceWith = `require("${alias}")`;
-    const newCode = input.code.replaceAll(regex, replaceWith);
-    await writeFile(input.filePath, newCode);
+    code = code.replaceAll(regex, replaceWith);
   }
+  await writeFile(input.filePath, code);
 }
