@@ -9,9 +9,11 @@
     "node"
   ],
   "dependencies": {
-    "class-transformer": "0.0.0"
+    "class-transformer": "0.0.0",
+    "class-validator": "0.0.0"
   },
   "peerDependencies": {
+    "bcrypt": "0.0.0",
     "@nestjs/common": "0.0.0",
     "@nestjs/core": "0.0.0",
     "@nestjs/swagger": "0.0.0",
@@ -21,6 +23,9 @@
     "@types/morgan": "0.0.0"
   },
   "peerDependenciesMeta": {
+    "bcrypt": {
+      "optional": true
+    },
     "@nestjs/swagger": {
       "optional": true
     },
@@ -30,6 +35,7 @@
   },
   "exports": {
     ".": "./index.js",
+    "./auth": "./auth/index.js",
     "./request-logger": "./request-logger/index.js",
     "./openapi": "./openapi/index.js"
   }

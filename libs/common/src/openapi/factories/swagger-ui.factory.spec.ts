@@ -1,7 +1,9 @@
 import { SwaggerUi, SwaggerUiFactory } from '@jchpro/nest-common/openapi';
 
 jest.mock('../internal/swagger', () => {
+  const actual = jest.requireActual('../internal/swagger');
   return {
+    ...actual,
     SwaggerModule: {
       setup: () => { },
       createDocument: () => ({

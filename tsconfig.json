@@ -21,6 +21,9 @@
       "@jchpro/nest-common": [
         "libs/common/src"
       ],
+      "@jchpro/nest-common/auth": [
+        "libs/common/src/auth"
+      ],
       "@jchpro/nest-common/request-logger": [
         "libs/common/src/request-logger"
       ],
