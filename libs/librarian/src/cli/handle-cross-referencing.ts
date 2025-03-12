@@ -9,10 +9,12 @@ import { DEPENDENCY_SOURCES } from '../utilities/dependencies';
 import { Library } from '../context/library';
 import { Project } from '../context/project';
 import { copyFiles, createPaths, FileCopyInstruction } from '../utilities/filesystem';
+import { getCleanSemver } from '../utilities/semver';
 
 export async function handleCrossReferencing(library: Library,
                                              libJson: PackageJson,
-                                             project: Project) {
+                                             project: Project,
+                                             libsVersions: Record<string, string>) {
 
   // Collect cross-referencing data
 
@@ -37,6 +39,10 @@ export async function handleCrossReferencing(library: Library,
       continue;
     }
     aliasToName[otherLibJson.name] = lib.name;
+    const version = (await lib.getLibrarianFile())?.version;
+    if (version) {
+      libsVersions[otherLibJson.name] = getCleanSemver(version);
+    }
   }
 
   // Store any aliases that are present in the dependency list

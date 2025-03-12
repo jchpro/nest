@@ -39,7 +39,8 @@ export async function build(libraryName: string, options: {
   await buildLibrary(library, project);
 
   // Handle cross-referencing if necessary
-  await handleCrossReferencing(library, libJson, project);
+  const libsVersions: Record<string, string> = {};
+  await handleCrossReferencing(library, libJson, project, libsVersions);
 
   // Copy assets
   if (options.assets) {
@@ -50,7 +51,7 @@ export async function build(libraryName: string, options: {
   }
 
   // Output package.json
-  const outputJson = prepareLibraryJson(library, libJson, rootJson, options.merge, options.version);
+  const outputJson = prepareLibraryJson(library, libJson, rootJson, options.merge, libsVersions, options.version);
   await writeJsonObject(join(library.tsOutDir, PACKAGE_FILE), outputJson);
 
   // Remove tsbuildinfo
@@ -115,6 +116,7 @@ function prepareLibraryJson(library: Library,
                             libJson: PackageJson,
                             rootJson: PackageJson,
                             mergePaths: string[] = [],
+                            libsVersions: Record<string, string> = {},
                             forceVersion?: string) {
 
   // Prepare
@@ -139,7 +141,7 @@ function prepareLibraryJson(library: Library,
     .reduce((obj, source) => ({...obj, ...rootJson[source] as object}), {} as Record<string, string>);
   for (const source of DEPENDENCY_SOURCES) {
     if (libJson[source]) {
-      outputJson[source] = processDependencies(libJson[source] as Record<string, string>, allRootsDeps, source) as any;
+      outputJson[source] = processDependencies(libJson[source] as Record<string, string>, allRootsDeps, source, libsVersions) as any;
     }
   }
 
@@ -155,10 +157,16 @@ function prepareLibraryJson(library: Library,
   return outputJson;
 }
 
-function processDependencies(defined: Record<string, string>, allRoot: Record<string, string>, source: string): Record<string, string> {
+function processDependencies(defined: Record<string, string>,
+                             allRoot: Record<string, string>,
+                             source: string,
+                             libsVersions: Record<string, string>): Record<string, string> {
   return Object.entries(defined)
     .map(([name, version]) => {
       if (version === AUTO_DEPENDENCY_VERSION) {
+        if (libsVersions[name]) {
+          return [name, `^${libsVersions[name]}`];
+        }
         const rootVersion = allRoot[name];
         if (!rootVersion) {
           throw Error(`Dependency "${name}" (${source}) was not found in the root ${PACKAGE_FILE}`);
