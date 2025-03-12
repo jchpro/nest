@@ -1,6 +1,6 @@
 {
   "name": "@jchpro/nest-mongoose",
-  "version": "0.3.0-SNAPSHOT",
+  "version": "0.4.0-SNAPSHOT",
   "description": "Mongoose utilities for Nest.js",
   "private": false,
   "bin": {

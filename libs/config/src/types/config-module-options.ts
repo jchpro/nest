@@ -8,9 +8,8 @@ export interface ConfigModuleOptions {
   /**
    * Array of config classes on which environment variables mapping and validation will be run.
    * These classes will be provided by the {@link ConfigModule} and thus available globally in the app.
-   * TODO rename to `load` some day.
    */
-  readonly classes: Type<any>[];
+  readonly load: Type<any>[];
 
   /**
    * Nest's original config module options, without `validate` function which is the backbone of this package's inner workings.

@@ -29,7 +29,7 @@ export class CatDto implements CommonDto<Cat> {
   isCute: boolean;
 
   static default(cat: CatDocument): CatDto {
-    return cat.toJSON();
+    return cat.toJSON() as CatDto;
   }
 
 }

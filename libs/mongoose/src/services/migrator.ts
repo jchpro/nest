@@ -45,6 +45,9 @@ export class Migrator {
             throw new Error(`Migration mismatch: (file) ${migration.id} != (changelog) ${logMigration.identifier}`);
           }
         }
+        if (!db) {
+          throw new Error(`Database not available, MongoDB connection not opened`);
+        }
         await migration.migrate.up(db, client, this.app);
         await service.logMigration(migration);
         runNow++;

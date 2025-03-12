@@ -11,7 +11,7 @@ import migrations from './app.migrations';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      classes: [CoreConfig]
+      load: [ CoreConfig]
     }),
     MongooseModule.forRootAsync({
       useFactory: (coreConfig: CoreConfig) => {

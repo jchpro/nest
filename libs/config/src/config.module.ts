@@ -54,8 +54,8 @@ export class ConfigModule {
     readonly provider: FactoryProvider;
     readonly validator: (config: Record<string, unknown>) => ValidationError[];
   }[] {
-    const { classes, classTransformOptions, validatorOptions } = options;
-    return classes.map((klass: Type<any>) => {
+    const { load, classTransformOptions, validatorOptions } = options;
+    return load.map((klass: Type<any>) => {
       let instance: any;
       const validator = (variables: Record<string, unknown>) => {
         const collectedConfig = ConfigModule.collectRelevantVariables(

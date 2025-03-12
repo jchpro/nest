@@ -41,13 +41,13 @@ export function ApiEnum(enumeration: EnumType,
  * Marks the optional API property with type of reusable enum registered with {@link reusableApiEnum}.
  */
 export function ApiEnumOptional(enumeration: EnumType,
-                                options?: Omit<ApiPropertyOptions, 'enum' | 'enumName' | 'required'>): PropertyDecorator {
+                                options?: Omit<ApiPropertyOptions, 'type' | 'enum' | 'enumName' | 'required'>): PropertyDecorator {
   return EnumDecorator(enumeration, true, options);
 }
 
 function EnumDecorator(enumeration: EnumType,
                        optional: boolean,
-                       options?: Omit<ApiPropertyOptions, 'enum' | 'enumName' | 'required'>) {
+                       options?: Omit<ApiPropertyOptions, 'type' | 'enum' | 'enumName' | 'required'>) {
   const name = map.get(enumeration);
   if (!name) {
     throw new Error(`Enum with name "${name}" not registered`);

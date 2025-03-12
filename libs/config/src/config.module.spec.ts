@@ -44,7 +44,7 @@ describe('ConfigModule', () => {
 
     // When
     const dynamicModule = ConfigModule.forRoot({
-      classes: [MyConfig],
+      load: [ MyConfig],
     });
 
     // Then
@@ -67,7 +67,7 @@ describe('ConfigModule', () => {
 
     // When
     ConfigModule.forRoot({
-      classes: [MyConfig],
+      load: [ MyConfig],
     });
     const config = ConfigResolver.get(MyConfig);
 
@@ -79,7 +79,7 @@ describe('ConfigModule', () => {
     // Given default PROCESS_ENV
     const testRunner = () => {
       ConfigModule.forRoot({
-        classes: [MyConfig],
+        load: [ MyConfig],
       });
     };
 
@@ -97,7 +97,7 @@ describe('ConfigModule', () => {
 
     const testRunner = () => {
       ConfigModule.forRoot({
-        classes: [MyConfig],
+        load: [ MyConfig],
         errorFactory: (errors) => new CustomError(errors),
       });
     };
