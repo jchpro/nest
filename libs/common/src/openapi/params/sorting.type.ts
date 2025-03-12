@@ -8,13 +8,13 @@ import { ApiPropertyOptional, ApiPropertyOptions, IntersectionType, OmitType } f
  * Return sorting params class with `sortBy` field typed with fields of a given model.
  */
 export function SortingType<T>(sortByOptions: (keyof T | string)[],
-                               options?: Omit<ApiPropertyOptions, 'type' | 'enum'>) {
+                               options?: Omit<ApiPropertyOptions, 'required' | 'type' | 'enum'>) {
   class TypedSortingParams implements SortingOptionsProvider {
     @ApiPropertyOptional({
       type: 'string',
       enum: sortByOptions,
       description: 'Field or path by which the data should be sorted',
-      ...options
+      ...options,
     })
     @Expose()
     @IsEnum(buildPseudoEnum(sortByOptions as string[]))

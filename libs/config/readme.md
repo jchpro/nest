@@ -69,7 +69,7 @@ In `AppModule`:
 @Module({
   imports: [
     ConfigModule.forRoot({
-      classes: [ServerConfig, DatabaseConfig]
+      load: [ServerConfig, DatabaseConfig]
     })
   ],
   controllers: [],
