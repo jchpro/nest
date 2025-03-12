@@ -1,6 +1,6 @@
 {
   "name": "@jchpro/nest-mongoose",
-  "version": "0.4.0-SNAPSHOT",
+  "version": "0.4.1-SNAPSHOT",
   "description": "Mongoose utilities for Nest.js",
   "private": false,
   "bin": {
@@ -12,8 +12,8 @@
     "cli"
   ],
   "dependencies": {
-    "@jchpro/nest-librarian": "^0.2.1",
-    "@jchpro/nest-common": "^0.2.0",
+    "@jchpro/nest-librarian": "0.0.0",
+    "@jchpro/nest-common": "0.0.0",
     "case-anything": "0.0.0",
     "class-validator": "0.0.0"
   },
