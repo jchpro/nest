@@ -46,12 +46,12 @@ If you'd like the dependency versions to be read from the root `package.json`, j
 {
   "dependencies": {
     "lodash": "0.0.0",
-    "commander": "^11.1.0"
+    "commander": "^13.1.0"
   }
 }
 ```
 
-In this example `lodash` will use the version from root, and `commander` will have `^11.1.0`.
+In this example `lodash` will use the version from root, and `commander` will have `^13.1.0`.
 
 ## Exported components
 
