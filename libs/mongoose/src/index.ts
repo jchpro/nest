@@ -1,5 +1,6 @@
 export * from './factories/app-schema.factory';
 export * from './factories/mongo-id-param.factory';
+export * from './factories/resolve-document-pipe.factory';
 
 export * from './services/migrator';
 export * from './services/query.executor';
