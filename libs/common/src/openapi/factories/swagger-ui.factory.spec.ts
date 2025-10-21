@@ -54,7 +54,8 @@ describe('SwaggerUiFactory', () => {
     expect(setupSpy).toHaveBeenCalledWith(
       'path',
       {},
-      { mock: 'openapi-doc' }
+      { mock: 'openapi-doc' },
+      undefined
     );
   });
 

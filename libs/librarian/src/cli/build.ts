@@ -69,7 +69,8 @@ function buildLibrary(library: Library, project: Project) {
       library.name
     ], {
       cwd: project.rootDir,
-      stdio: [process.stdin, process.stdout, process.stderr]
+      stdio: [process.stdin, process.stdout, process.stderr],
+      shell: true
     });
     buildProcess.on('close', (code) => {
       if (code === 0) {
