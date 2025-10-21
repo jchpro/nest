@@ -1,5 +1,6 @@
 import type { INestApplication } from '@nestjs/common';
 import type { OpenAPIObject, SwaggerDocumentOptions } from '@nestjs/swagger';
+import { SwaggerCustomOptions } from '@nestjs/swagger/dist/interfaces';
 import { SwaggerUiOptions } from '../types/swagger-ui.options';
 import { SwaggerModule } from '../internal/swagger';
 
@@ -13,11 +14,14 @@ class SwaggerUi {
   /**
    * Sets up the Swagger UI server, optionally with the JSON document served at a separate endpoint.
    */
-  serve(path: string, options?: SwaggerUiOptions) {
+  serve(path: string, options?: SwaggerUiOptions, extraOptions?: SwaggerCustomOptions) {
     const effectivePath = path.replace(/^\/+/, '');
-    SwaggerModule.setup(effectivePath, this.app, this.openapiDoc);
+    let docPath: string | undefined;
     if (options?.serveDoc) {
-      const docPath = `/${effectivePath}/${options?.docPath ?? 'doc.json'}`;
+      docPath = `/${effectivePath}/${options?.docPath ?? 'doc.json'}`;
+    }
+    SwaggerModule.setup(effectivePath, this.app, this.openapiDoc, extraOptions);
+    if (docPath) {
       const server = this.app.getHttpAdapter();
       server.use(docPath, (req: any, res: { json(json: any): void }) => {
         res.json(this.openapiDoc);

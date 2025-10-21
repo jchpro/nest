@@ -77,7 +77,9 @@ export class Library {
         '--project',
         tsConfigPath,
         '--showConfig'
-      ]);
+      ], {
+        shell: true
+      });
       let output: string = '';
       buildProcess.stdout.on('data', (chunk: string | Buffer) => {
         output += chunk.toString();

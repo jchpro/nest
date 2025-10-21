@@ -6,6 +6,7 @@
 
 - `@AppSchema` - returned by a factory function, lets you set some defaults which will be applied for each schema
 - `@MongoIdParam` - returned by a factory function, will validate Mongo ID parameter and throw any error you wish
+- `@TransformMongoId` - returned by a factory function, will transform Mongo ID to a string with `class-transformer`
 
 ## Queries
 
