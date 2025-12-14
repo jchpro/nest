@@ -10,4 +10,6 @@ export * from './params/pagination.params';
 export * from './params/sorting.params';
 export * from './params/sorting.type';
 
+export * from './utilities/polymorphism-api.helper';
+
 export * from './types/swagger-ui.options';
