@@ -2,6 +2,7 @@ import { Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema } from 'mongoose';
 import { AppSchema } from '../../core/decorators/app-schema';
 import { CommonSchema } from '../../core/types/schemas';
+import { Owner } from './owner.schema';
 
 @AppSchema()
 export class Cat implements CommonSchema {
@@ -26,6 +27,13 @@ export class Cat implements CommonSchema {
 
   @Prop()
   isCute: boolean;
+
+  @Prop({
+    type: Schema.Types.ObjectId,
+    ref: Owner.name,
+    required: false
+  })
+  owner?: Schema.Types.ObjectId;
 }
 
 export type CatDocument = Cat & Document;

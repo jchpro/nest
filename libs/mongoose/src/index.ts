@@ -5,6 +5,8 @@ export * from './factories/resolve-document-pipe.factory';
 export * from './services/migrator';
 export * from './services/query.executor';
 export * from './services/query.service';
+export * from './services/referencing-docs-lookup.service';
+export * from './services/schema-references.service';
 
 export * from './types/crud';
 export * from './types/dtos';
@@ -15,3 +17,4 @@ export * from './utilities/polymorphic.schema';
 
 export * from './mongo-migrate.module';
 export * from './mongoose-crud.module';
+export * from './single-connection-schema-refs.module';
