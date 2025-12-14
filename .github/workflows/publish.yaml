@@ -4,10 +4,6 @@ on:
     types:
       - released
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   publish:
     name: Build and publish
@@ -25,7 +21,6 @@ jobs:
         with:
           node-version: '20.12.0'
           registry-url: 'https://registry.npmjs.org'
-          always-auth: false
       - name: Install dependencies
         run: npm ci
       - name: Print what should happen
@@ -42,6 +37,8 @@ jobs:
         if: ${{ steps.build_common.outcome == 'success' }}
         working-directory: ./dist/libs/common
         run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Build config library
         id: build_config
         if: ${{ env.BUILD_CONFIG_LIBRARY == 'true' }}
@@ -50,6 +47,8 @@ jobs:
         if: ${{ steps.build_config.outcome == 'success' }}
         working-directory: ./dist/libs/config
         run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Build librarian library
         id: build_librarian
         if: ${{ env.BUILD_LIBRARIAN_LIBRARY == 'true' }}
@@ -58,6 +57,8 @@ jobs:
         if: ${{ steps.build_librarian.outcome == 'success' }}
         working-directory: ./dist/libs/librarian
         run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Build mongoose library
         id: build_mongoose
         if: ${{ env.BUILD_MONGOOSE_LIBRARY == 'true' }}
@@ -66,3 +67,5 @@ jobs:
         if: ${{ steps.build_mongoose.outcome == 'success' }}
         working-directory: ./dist/libs/mongoose
         run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
