@@ -3,6 +3,7 @@ import { MongoMigrateModule, MongooseCrudModule } from '@jchpro/nest-mongoose';
 import { Module } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
+import { SingleConnectionSchemaRefsModule } from '@jchpro/nest-mongoose';
 import { CoreConfig } from './config/core.config';
 import { StatusController } from './core/controllers/status.controller';
 import { CatsModule } from './cats/cats.module';
@@ -31,7 +32,8 @@ import migrations from './app.migrations';
         path: 'cats',
         module: CatsModule
       }
-    ])
+    ]),
+    SingleConnectionSchemaRefsModule.forRoot()
   ],
   providers: [
   ],
