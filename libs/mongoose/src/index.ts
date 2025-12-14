@@ -11,5 +11,7 @@ export * from './types/dtos';
 export * from './types/migrations';
 export * from './types/schemas';
 
+export * from './utilities/polymorphic.schema';
+
 export * from './mongo-migrate.module';
 export * from './mongoose-crud.module';

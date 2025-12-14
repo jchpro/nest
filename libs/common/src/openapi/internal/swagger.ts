@@ -9,6 +9,7 @@ import type {
   IntersectionType as IntersectionTypeType,
   OmitType as OmitTypeType,
   SwaggerModule as SwaggerModuleType,
+  getSchemaPath as getSchemaPathType
 } from '@nestjs/swagger';
 
 let ApiOkResponse: typeof ApiOkResponseType;
@@ -20,6 +21,7 @@ let ApiTags: typeof ApiTagsType;
 let IntersectionType: typeof IntersectionTypeType;
 let OmitType: typeof OmitTypeType;
 let SwaggerModule: typeof SwaggerModuleType;
+let getSchemaPath: typeof getSchemaPathType;
 
 try {
   const ns = require('@nestjs/swagger');
@@ -32,6 +34,7 @@ try {
   ApiPropertyOptional = ns.ApiPropertyOptional;
   IntersectionType = ns.IntersectionType;
   OmitType = ns.OmitType;
+  getSchemaPath = ns.getSchemaPath;
 } catch (err) {
   console.error('Could not resolve `@nestjs/swagger` package, please run `npm i @nestjs/swagger`');
   throw err;
@@ -47,5 +50,6 @@ export {
   ApiPropertyOptional,
   ApiPropertyOptions,
   IntersectionType,
-  OmitType
+  OmitType,
+  getSchemaPath
 };
