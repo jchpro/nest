@@ -48,6 +48,7 @@ node_modules/
 
 # Build output
 /dist
+/libs/*/dist
 
 # IDEs
 /.idea
