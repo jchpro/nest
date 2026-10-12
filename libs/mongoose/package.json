@@ -1,0 +1,61 @@
+{
+  "name": "@jchpro/nest-mongoose",
+  "version": "1.0.0",
+  "description": "Mongoose utilities for Nest.js",
+  "keywords": [
+    "nest.js",
+    "mongoose",
+    "migrations"
+  ],
+  "type": "module",
+  "private": false,
+  "author": "https://github.com/jchpro",
+  "license": "LGPL-3.0-only",
+  "homepage": "https://github.com/jchpro/nest",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jchpro/nest.git",
+    "directory": "libs/mongoose"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "mongo-migrate-create": "./dist/migrate-tool/bin.js"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "readme.md",
+    "changelog.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json",
+    "type-check": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "case-anything": "^3.1.2"
+  },
+  "peerDependencies": {
+    "@jchpro/nest-common": "^1.0.0",
+    "@nestjs/common": "^12.0.0",
+    "@nestjs/mongoose": "^12.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.3",
+    "mongoose": "^8.20.2"
+  }
+}
