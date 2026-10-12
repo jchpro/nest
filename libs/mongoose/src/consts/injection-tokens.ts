@@ -1,9 +1,0 @@
-/**
- * @ignore
- */
-export const MONGOOSE_CRUD_OPTIONS = 'MONGOOSE_CRUD_OPTIONS';
-
-/**
- * @ignore
- */
-export const SINGLE_CONNECTION_SCHEMA_REFS_OPTIONS = 'SINGLE_CONNECT_SCHEMA_REFS_OPTIONS';
