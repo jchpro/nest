@@ -6,7 +6,7 @@ and [releasing.md](releasing.md).
 
 ## Layout
 
-- `libs/` – npm workspaces, one package each: `common`, `config`, `i18n`, `mongoose` (`@jchpro/nest-<name>`). Every package has its own `package.json`, `tsconfig.json` (type-check, includes tests), `tsconfig.build.json` (build, excludes tests), `src/`, `readme.md`, `changelog.md` and `LICENSE`; `common` and `mongoose` also have `docs/`.
+- `libs/` – npm workspaces, one package each: `common`, `config`, `i18n`, `mongoose` (`@jchpro/nest-<name>`). Every package has its own `package.json`, `tsconfig.json` (type-check, includes tests), `tsconfig.build.json` (build, excludes tests), `src/`, `readme.md` and `changelog.md`; `common` and `mongoose` also have `docs/`.
 - `tsconfig.libs.json` – shared compiler options (ESM, `nodenext`, decorator metadata).
 - `scripts/` – `verify-libs.mjs`, `check-versions.mjs`, `release.mjs` (+ `lib/libs.mjs`, the list of packages).
 - `.github/workflows/` – `pull_request.yaml` and one `publish-<lib>.yaml` per package.

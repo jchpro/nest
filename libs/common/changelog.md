@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Breaking:** the package is ESM only and ships compiled code from `dist/` (it can still be `require()`d on Node.js 20.19+ / 22.12+). Only the entry points listed in `exports` can be imported, deep imports are not supported.
+- **Breaking:** the package is ESM only and ships compiled code from `dist/` (it can still be `require()`d). Only the entry points listed in `exports` can be imported, deep imports are not supported.
 - **Breaking:** requires Nest.js 12. Dependencies that must be shared with the application (`@nestjs/*`, `class-validator`, `class-transformer`, ...) are now peer dependencies.
 - Entry points: `.`, `./auth`, `./openapi`, `./request-logger`, `./throttling`. `@nestjs/swagger`, `@nestjs/throttler`, `bcrypt` and `morgan` are optional peer dependencies, needed only by the entry points that use them.
 

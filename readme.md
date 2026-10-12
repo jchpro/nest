@@ -15,7 +15,7 @@ The packages are ESM, built with plain `tsc` into `libs/*/dist`, and versioned a
 
 ## Development
 
-Node.js 24 (see `.nvmrc`). The packages are npm workspaces under `libs/`.
+Node.js 24 or newer (see `.nvmrc`); the packages declare `engines.node` `>=24`. The packages are npm workspaces under `libs/`.
 
 ```shell
 npm ci
@@ -34,4 +34,4 @@ Please make sure to update tests as appropriate.
 
 ## License
 
-[GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
+LGPL-3.0-only (see the `license` field of each package).
