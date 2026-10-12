@@ -10,12 +10,65 @@
 
 ## Queries
 
-- `QueryExecutor` - holds the query data and executes it for a given Mongoose model
-- `QueryService` - prepares `QueryExectuor` passing global config
+- `QueryExecutor` - holds the query data (`QueryData` of `@jchpro/nest-common`: offset, limit, sorting) and executes it for a given Mongoose model, returning a `QueryResult`
+- `QueryService` - prepares a `QueryExecutor` passing global config (`prepare()`), or runs it right away (`execute()`). Besides the model and the data it takes an optional `FilterQueryProvider` (an object with `getFilters()`, e.g. a query DTO), a projection and other Mongoose query options (`OtherQueryOptions`)
+- `MongooseCrudModule` provides `QueryService`, with `forRoot` (global), `forFeature`, `forRootAsync` and `forFeatureAsync`. `CrudOptions.maxLimit` caps the requested `limit`
+
+```typescript
+MongooseCrudModule.forRoot({ maxLimit: 25 })
+
+// in a service
+return this.queryService.execute(this.model, queryData, filtersProvider);
+```
+
+## Transactions
+
+`TransactionalService` is a base class (its constructor takes a Mongoose `Connection`) with `transactional(callback)`, which runs the callback inside a
+session transaction. The queries in the callback must receive the session (`{ session }` or `.session(session)`), otherwise they are not part of the transaction.
+Transactions need a replica set.
+
+```typescript
+@Injectable()
+export class BooksService extends TransactionalService {
+  constructor(@InjectConnection() connection: Connection) {
+    super(connection);
+  }
+
+  async move() {
+    await this.transactional(async session => {
+      await this.model.updateOne(filter, update, { session });
+    });
+  }
+}
+```
+
+## Polymorphic schemas
+
+`PolymorphicSchema<T>(discriminator, BaseClass)` is the Mongoose counterpart of `PolymorphismHelper` from `@jchpro/nest-common`.
+Each `register(value, SubClass)` creates the sub schema with `SchemaFactory.createForClass` and adds it as a discriminator of the base schema,
+which is available as `.schema`.
+
+```typescript
+const MetadataPolymorphic = new PolymorphicSchema<MetadataType>('type', Metadata);
+MetadataPolymorphic.register(MetadataType.IMAGE, ImageMetadata);
+MetadataPolymorphic.register(MetadataType.VIDEO, VideoMetadata);
+
+export const MetadataSchema = MetadataPolymorphic.schema;
+```
+
+## Schema references
+
+To find what references a document before deleting it, see [Schema references](./schema-references.md).
 
 ## Various types
 
 Mostly CRUD related.
+
+- `IdentifiableSchema` - a schema with an `_id: Types.ObjectId`
+- `SoftDeletableSchema` - a schema using the soft delete plugin (below)
+- `EntityDto<T>` - `T` with `_id` turned into a string, the shape of a serialized document
+- `FilterQueryProvider` and `CrudOptions` - see "Queries"
+- `TransformMongoIdOptions` - options of `TransformMongoIdFactory`: `documentIdField` (`_id` by default) is the name of the ID field of a populated document
 
 ## Soft deletes
 

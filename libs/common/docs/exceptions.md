@@ -79,6 +79,12 @@ Yeah! Just extend `ExceptionHandlerBehavior`, implement abstract methods and you
 All internal methods are `protected` so you can overwrite them in any combination, or just disregard them entirely.
 What's important is that you return `ExceptionHandlingInstructions` in the `instruct` method.
 
+### Types
+
+- `GlobalExceptionHandlerOptions` (third argument of `setup`): `logger` replaces the default logger, `unknownErrorName` is the `error` name used for thrown values that aren't errors (`"Unknown"` by default; a behavior can override it)
+- `CaughtExceptionHttpContext` is what a behavior's `instruct` receives: the `host`, the `exception`, whether it was `recognized` (an `HttpException`), and `data` (`CaughtExceptionHttpData`: `error`, `message`, `statusCode`, `path`, `timestamp`, `uuid`, `stack`). Mutate `data` to change the response, e.g. to translate the message. The generic `CaughtExceptionContext` and `CaughtExceptionData` are the base of it
+- `ExceptionHandlingInstructions` is what `instruct` returns: `log` (`ExceptionLogArguments`, the message and optionally the stack trace for the logger) and `respondWith` (the response body)
+
 ### Supported contexts
 
 Right now only `http` context is supported.

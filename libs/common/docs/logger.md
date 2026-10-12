@@ -15,3 +15,5 @@ const app = await NestFactory.create(AppModule, {
 Refer to `LogLevels` enum to see what levels will be used.
 
 You can pass everything `Nest.js` would accept in `NestFactory#create` option `logger`.
+
+The level sets are also exported as `PRODUCTION`, `DEVELOPMENT` and `DEBUG` (arrays of Nest `LogLevel`s) if you need them directly.

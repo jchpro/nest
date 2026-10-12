@@ -46,3 +46,12 @@ async function bootstrap() {
   await new Migrator(app).up();
 }
 ```
+
+`withMigrations(migrations, options?)` accepts `MigrateOptions`: `collectionName` (the changelog collection, `changelog` by default) and `lockCollectionName` (`changelog-lock` by default).
+
+### How migrations run
+
+- A migration is a `Migration` (`up(db, client, app)`, `down` is not supported yet) wrapped with its `id` in a `MigrationWrapper`. The generated files and the collector do this for you.
+- `Migrator.up()` takes a lock in the lock collection, so only one instance of the app migrates at a time (the others skip it), runs the migrations not yet recorded in the changelog collection, in the order of the collector, and releases the lock.
+- A migration recorded under a different ID than the one at its position in the collector makes the run fail: add new migrations at the end, never reorder them.
+- A failure is logged, it is not thrown out of `up()`. Check the logs, or the changelog, if the app must not start on a half-migrated database.

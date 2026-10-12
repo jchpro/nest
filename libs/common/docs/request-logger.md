@@ -27,3 +27,6 @@ Factory accepts:
 - predefined format, one of: `dev`, `short`, `tiny`, `combined` or `common`;
 - `morgan.FormatFn` for custom formatting;
 - `{ format: morgan.FormatFn; options: options: morgan.Options }` for custom formatting and options;
+
+The accepted value is typed as `RequestLoggerConfig`; the predefined formats are typed as `RequestLoggerFormat`.
+Passing nothing returns `undefined` (no logger), so a config value that may be unset can be passed straight through.
