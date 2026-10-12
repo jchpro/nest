@@ -1,0 +1,51 @@
+{
+  "name": "@jchpro/nest-i18n",
+  "version": "1.0.0",
+  "description": "nestjs-i18n helpers for Nest.js (deferred validation messages, error translation)",
+  "keywords": [
+    "nest.js",
+    "i18n",
+    "validation"
+  ],
+  "type": "module",
+  "private": false,
+  "author": "https://github.com/jchpro",
+  "license": "LGPL-3.0-only",
+  "homepage": "https://github.com/jchpro/nest",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jchpro/nest.git",
+    "directory": "libs/i18n"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "readme.md",
+    "changelog.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json",
+    "type-check": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "class-validator": "^0.14.3",
+    "nestjs-i18n": "^10.8.5"
+  }
+}
