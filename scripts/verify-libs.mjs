@@ -9,7 +9,8 @@ import { join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-const workspaces = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).workspaces;
+// Only the libraries are published, `apps/*` (the example app) are private
+const workspaces = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).workspaces.filter(w => w.startsWith('libs/'));
 const packages = workspaces.map(w => JSON.parse(readFileSync(join(root, w, 'package.json'), 'utf8')));
 const OPTIONAL_PEERS = ['@nestjs/swagger', '@nestjs/throttler', 'bcrypt', 'morgan'];
 
