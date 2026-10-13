@@ -14,7 +14,7 @@ The package installs the `mongo-migrate-create` command. It takes three argument
 npx mongo-migrate-create src/migrations src/app.migrations.ts @jchpro/nest-mongoose
 ```
 
-It asks for the name of the migration, creates the migration file and regenerates the collector file. Put the command into an npm script (the API does it as `npm run create-migration`).
+It asks for the name of the migration, creates the migration file and regenerates the collector file. Put the command into an npm script (the API does it as `npm run create-migration`). The migrations directory and the collector file must exist before the first run, the collector can start as `export default [];` with the `MigrationWrapper` import. The generated imports have the `.js` extension, as ESM requires.
 
 ### Running migrations on app startup
 
@@ -22,7 +22,7 @@ It asks for the name of the migration, creates the migration file and regenerate
 // app.module.ts
 
 // Default name of the "collector" file.
-import migrations from './app.migrations';
+import migrations from './app.migrations.js';
 
 @Module({
   imports: [

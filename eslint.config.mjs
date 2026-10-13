@@ -31,7 +31,7 @@ export default [{
     sourceType: 'module',
 
     parserOptions: {
-      project: ['./libs/*/tsconfig.json'],
+      project: ['./libs/*/tsconfig.json', './apps/*/tsconfig.json'],
       tsconfigRootDir: __dirname,
     },
   },

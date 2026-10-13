@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Breaking:** `Migrator.up()` rethrows the error when a migration fails (it was only logged), so the application can react, e.g. refuse to start. The changelog lock is still released.
 
+### Fixed
+
+- `TransformMongoIdFactory` and `TransformMongoIdOptions` are exported from the package entry point (documented, but were missing from the barrel).
+- `mongo-migrate-create` writes the imports of the collector file with the `.js` extension, which ESM projects (`nodenext`) require. Regenerate the collector (create a migration) to get the new form; the old form keeps working in the setups it worked in.
+
 ## [1.0.0] - 2026-10-13
 
 ### Changed
