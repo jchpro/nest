@@ -1,5 +1,14 @@
+import type * as SwaggerModuleType from '@nestjs/swagger';
 import type { ApiEnum as ApiEnumType, ApiEnumOptional as ApiEnumOptionalType, reusableApiEnum as reusableApiEnumType } from '../index.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('@nestjs/swagger', async (importOriginal) => {
+  const actual = await importOriginal<typeof SwaggerModuleType>();
+  return {
+    ...actual,
+    ApiProperty: vi.fn(actual.ApiProperty),
+  };
+});
 
 describe('ApiEnum, ApiEnumOptional, reusableApiEnum', () => {
   let mockModule: any;
@@ -16,7 +25,7 @@ describe('ApiEnum, ApiEnumOptional, reusableApiEnum', () => {
     ApiEnum = ns.ApiEnum;
     ApiEnumOptional = ns.ApiEnumOptional;
     reusableApiEnum = ns.reusableApiEnum;
-    mockModule = await import('../internal/swagger.js');
+    mockModule = await import('@nestjs/swagger');
   });
 
   function registerEnum() {

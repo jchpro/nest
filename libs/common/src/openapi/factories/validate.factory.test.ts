@@ -1,3 +1,4 @@
+import type * as SwaggerModuleType from '@nestjs/swagger';
 import { ValidateFactory } from '../index.js';
 import type * as NestCommonModule from '@nestjs/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -5,6 +6,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const state = vi.hoisted(() => ({
   usePipesArgs: [] as any[],
 }));
+
+vi.mock('@nestjs/swagger', async (importOriginal) => {
+  const actual = await importOriginal<typeof SwaggerModuleType>();
+  return {
+    ...actual,
+    ApiBadRequestResponse: vi.fn(actual.ApiBadRequestResponse),
+  };
+});
 
 vi.mock('@nestjs/common', async (importOriginal) => {
   const actual = await importOriginal<typeof NestCommonModule>();
@@ -28,7 +37,7 @@ describe('ValidateFactory', () => {
 
   beforeEach(async () => {
     state.usePipesArgs = [];
-    mockSwagger = await vi.importActual('../internal/swagger.js');
+    mockSwagger = await import('@nestjs/swagger');
     mockCommon = await import('@nestjs/common');
   });
 

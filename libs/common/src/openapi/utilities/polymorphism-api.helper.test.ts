@@ -5,7 +5,7 @@ const state = vi.hoisted(() => ({
   apiPropertyArgs: [] as any[],
 }));
 
-vi.mock('../internal/swagger', () => {
+vi.mock('@nestjs/swagger', () => {
   return {
     getSchemaPath: (model: any) => `#/components/schemas/${model?.name ?? 'Unknown'}`,
     ApiProperty: (...args: any[]) => {

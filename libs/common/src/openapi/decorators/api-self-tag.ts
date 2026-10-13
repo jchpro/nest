@@ -1,4 +1,4 @@
-import { ApiTags } from '../internal/swagger.js';
+import { ApiTags } from '@nestjs/swagger';
 
 /**
  * Tags controller with the class name, allows passing additional tags.

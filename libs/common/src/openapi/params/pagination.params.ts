@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 import { IsOptional, IsPositive, Min } from 'class-validator';
-import { ApiPropertyOptional } from '../internal/swagger.js';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import type { PaginationParams as PaginationParamsObject } from '../../index.js';
 
 /**

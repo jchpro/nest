@@ -1,6 +1,6 @@
 import { applyDecorators, UsePipes, ValidationPipe, type ValidationPipeOptions } from "@nestjs/common";
 import type { ApiResponseOptions } from "@nestjs/swagger";
-import { ApiBadRequestResponse } from '../internal/swagger.js';
+import { ApiBadRequestResponse } from '@nestjs/swagger';
 
 /**
  * Returns Controller / Endpoint decorator for attaching `ValidationPipe` with provided options.

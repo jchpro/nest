@@ -1,4 +1,4 @@
-import { ApiProperty } from '../internal/swagger.js';
+import { ApiProperty } from '@nestjs/swagger';
 import type { ApiPropertyOptions } from '@nestjs/swagger';
 
 type EnumType = Record<string, any>;

@@ -3,7 +3,7 @@ import { type ApiResponseOptions, type HeaderObject, type HeadersObject } from '
 import { map, type Observable } from 'rxjs';
 import type { Response } from 'express';
 import { QueryResult } from '../../index.js';
-import { ApiOkResponse } from '../internal/swagger.js';
+import { ApiOkResponse } from '@nestjs/swagger';
 
 /**
  * Decorator for OK response which is expected to return the {@link QueryResult}.

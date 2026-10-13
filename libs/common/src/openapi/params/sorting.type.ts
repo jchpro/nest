@@ -2,7 +2,7 @@ import { IsEnum, IsOptional } from 'class-validator';
 import { Expose } from 'class-transformer';
 import { SortingParams } from './sorting.params.js';
 import type { SortingOptionsProvider } from '../../index.js';
-import { ApiPropertyOptional, type ApiPropertyOptions, IntersectionType, OmitType } from '../internal/swagger.js';
+import { ApiPropertyOptional, type ApiPropertyOptions, IntersectionType, OmitType } from '@nestjs/swagger';
 
 /**
  * Return sorting params class with `sortBy` field typed with fields of a given model.
