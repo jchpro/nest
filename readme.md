@@ -25,6 +25,7 @@ npm run type-check   # builds the libs first, then tsc --noEmit for each of them
 npm run lint:check
 npm test             # Vitest; builds the libs first
 npm run build        # libs/*/dist, in dependency order
+npm run test:e2e     # end-to-end tests with an in-memory MongoDB replica set, see e2e/readme.md
 npm run verify:libs  # packs the tarballs and checks them in a clean temporary project
 npm run start:example # builds everything and starts the example app (needs MongoDB, see its readme)
 ```

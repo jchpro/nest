@@ -18,12 +18,14 @@
     "build:libs": "npm run build --workspaces --if-present",
     "type-check": "npm run type-check --workspaces --if-present",
     "pretype-check": "npm run build:libs",
-    "lint": "eslint \"libs/**/*.ts\" \"apps/**/*.ts\" --fix",
-    "lint:check": "eslint \"libs/**/*.ts\" \"apps/**/*.ts\"",
-    "format": "prettier --write \"libs/**/*.ts\" \"apps/**/*.ts\"",
+    "lint": "eslint \"libs/**/*.ts\" \"apps/**/*.ts\" \"e2e/**/*.ts\" --fix",
+    "lint:check": "eslint \"libs/**/*.ts\" \"apps/**/*.ts\" \"e2e/**/*.ts\"",
+    "format": "prettier --write \"libs/**/*.ts\" \"apps/**/*.ts\" \"e2e/**/*.ts\"",
     "test": "vitest run",
     "pretest": "npm run build:libs",
     "test:watch": "vitest",
+    "test:e2e": "vitest run --config e2e/vitest.e2e.config.mts",
+    "pretest:e2e": "npm run build:libs",
     "test:cov": "vitest run --coverage",
     "verify:libs": "npm run build:libs && node scripts/verify-libs.mjs",
     "check:versions": "node scripts/check-versions.mjs",
@@ -74,13 +76,15 @@
     "bcrypt": true,
     "esbuild": true,
     "@swc/core": true,
-    "@scarf/scarf": false
+    "@scarf/scarf": false,
+    "mongodb-memory-server": false
   },
   "workspaces": [
     "libs/common",
     "libs/config",
     "libs/i18n",
     "libs/mongoose",
-    "apps/example-app"
+    "apps/example-app",
+    "e2e"
   ]
 }
