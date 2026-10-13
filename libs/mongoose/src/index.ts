@@ -1,6 +1,7 @@
 export * from './factories/app-schema.factory.js';
 export * from './factories/mongo-id-param.factory.js';
 export * from './factories/resolve-document-pipe.factory.js';
+export * from './factories/transform-mongo-id.factory.js';
 
 export * from './plugins/soft-delete.plugin.js';
 

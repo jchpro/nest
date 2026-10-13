@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Breaking:** `Migrator.up()` rethrows the error when a migration fails (it was only logged), so the application can react, e.g. refuse to start. The changelog lock is still released.
 
+### Fixed
+
+- `TransformMongoIdFactory` and `TransformMongoIdOptions` are exported from the package entry point (documented, but were missing from the barrel).
+
 ## [1.0.0] - 2026-10-13
 
 ### Changed
