@@ -41,3 +41,35 @@ jobs:
       # Only what consumers install; advisories in dev tooling don't block anything
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
+
+  e2e:
+    name: End-to-end tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      # `mongodb-memory-server` downloads a `mongod` binary (~210 MB) when it first starts: not at `npm ci`,
+      # and into a fixed directory, which is cached below
+      MONGOMS_DISABLE_POSTINSTALL: 1
+      MONGOMS_DOWNLOAD_DIR: /home/runner/.cache/mongodb-binaries
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      # The binary a version of the package downloads doesn't change, so the cache is keyed on that version
+      - name: Resolve the mongodb-memory-server version
+        id: mongo
+        run: echo "version=$(node -p "JSON.parse(require('fs').readFileSync('node_modules/mongodb-memory-server-core/package.json', 'utf8')).version")" >> "$GITHUB_OUTPUT"
+      - name: Cache the MongoDB binary
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.MONGOMS_DOWNLOAD_DIR }}
+          key: mongodb-binaries-${{ runner.os }}-${{ steps.mongo.outputs.version }}
+      # Builds the libraries first, the tests use them like an app does
+      - name: End-to-end tests
+        run: npm run test:e2e
