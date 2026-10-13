@@ -36,14 +36,12 @@ Before finishing a change, run `type-check`, `lint:check`, `test` and, when pack
 - Nest 12 only: the peer dependencies are `^12.0.0`. Don't add compatibility code for older Nest versions.
 - Everything the libs declare as peers (or import in tests) is also a dev dependency of the root `package.json`; keep both in sync when a lib gains a dependency, and extend `verify-libs.mjs` when it gains an optional peer or an entry point that needs one.
 - Match the surrounding code's style, comment density and naming. Prettier config is in `.prettierrc`.
-- <!-- REVIEW: "customer apps" and "reused by websites-api" are my reading of the brief; correct if the consumer list is wrong -->
 
 ## Testing
 
 - Unit tests live next to the code (`*.test.ts`). Import from `vitest` explicitly (`globals: false`).
 - Vitest runs the tests through the SWC plugin (`unplugin-swc`) so `emitDecoratorMetadata` works for Nest's DI.
 - `mongoose` tests import `@jchpro/nest-common` from its built `dist/`, hence `npm test` builds the libs first.
-- <!-- REVIEW: no e2e/integration tests exist here (they stay in the consuming apps); I wrote nothing about them -->
 
 ## Versioning and releasing
 
@@ -58,11 +56,10 @@ Before finishing a change, run `type-check`, `lint:check`, `test` and, when pack
 
 - `.env` and `.ai.env` are gitignored and never committed. Don't print or commit secrets or tokens.
 - Stop any server or background process you started for testing before you finish.
-- <!-- REVIEW: left out the websites-api rules about mail/SMTP/external services, as the libs have no such runtime; check that nothing similar applies here -->
 
 ## Git workflow
 
 - `main` is the only long-lived branch and must stay green; don't push to it directly.
 - Work on a short-lived branch per change (`feat/...`, `fix/...`, `chore/...`), commit in small logical steps, open a PR against `main` when the work is ready.
 - The owner reviews and merges PRs. Don't merge or enable auto-merge unless asked.
-- <!-- REVIEW: ng allows pushing docs-only changes straight to main (owner bypass); I did not carry that over, add it if you want it here too -->
+- The owner allows pushing docs-only changes straight to main (owner bypass); I did not carry that over, add it if you want it here too.
