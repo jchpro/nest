@@ -1,5 +1,5 @@
 import { type CaughtExceptionHttpContext, ExceptionHandlerBehaviorHttp } from '../../index.js';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, NotFoundException } from '@nestjs/common';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('ExceptionHandlerBehaviorHttp', () => {
@@ -44,6 +44,76 @@ describe('ExceptionHandlerBehaviorHttp', () => {
         timestamp: 'ts',
         statusCode: 404
       }
+    });
+  });
+
+  describe('details of a recognized error', () => {
+    function respondWith(exception: HttpException, dataExtras: object = {}) {
+      return behavior.instruct({
+        host: {} as any,
+        exception,
+        recognized: true,
+        data: { error: exception.name, message: exception.message, timestamp: 'ts', statusCode: exception.getStatus(), ...dataExtras }
+      }).respondWith;
+    }
+
+    it('should have the messages which ValidationPipe puts into the response body', () => {
+      // `ValidationPipe` throws `BadRequestException` with the array of messages
+      const exception = new BadRequestException(['name should not be empty', 'age must be a number']);
+
+      const response = respondWith(exception);
+
+      expect(exception.message).toBe('Bad Request Exception');
+      expect(response).toMatchObject({
+        message: 'Bad Request Exception',
+        details: ['name should not be empty', 'age must be a number'],
+      });
+    });
+
+    it.each([
+      ['a message which is a string', new BadRequestException('plain')],
+      ['a response which is a string', new HttpException('plain', 418)],
+      ['an empty array of messages', new BadRequestException([])],
+      ['an array of something else than strings', new BadRequestException([{ field: 'name' }] as any)],
+      ['a response with no message', new HttpException({ code: 'X' }, 422)],
+    ])('should have no details for %s', (_name, exception) => {
+      const response = respondWith(exception);
+
+      expect(response).not.toHaveProperty('details', expect.anything());
+    });
+
+    it('should keep the details which were already put into the data', () => {
+      const response = respondWith(new BadRequestException(['from the body']), { details: ['set earlier'] });
+
+      expect(response).toMatchObject({ details: ['set earlier'] });
+    });
+
+    it('can be extracted differently by a subclass', () => {
+      class OwnBehavior extends ExceptionHandlerBehaviorHttp {
+        protected extractDetails(exception: HttpException): string[] {
+          return [`status ${exception.getStatus()}`];
+        }
+      }
+
+      const response = new OwnBehavior().instruct({
+        host: {} as any,
+        exception: new NotFoundException(),
+        recognized: true,
+        data: { error: 'NotFoundException', timestamp: 'ts', statusCode: 404 }
+      }).respondWith;
+
+      expect(response).toMatchObject({ details: ['status 404'] });
+    });
+
+    it('should not be added to the response of an unrecognized error', () => {
+      const response = behavior.instruct({
+        host: {} as any,
+        exception: new BadRequestException(['not seen']) as unknown,
+        recognized: false,
+        data: { error: 'Error', timestamp: 'ts', statusCode: 500, uuid: 'uuid' }
+      }).respondWith;
+
+      expect(response).not.toHaveProperty('details', expect.anything());
     });
   });
 

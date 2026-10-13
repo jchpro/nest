@@ -1,10 +1,26 @@
 import { CommonExceptionHandlerBehaviorHttp, GlobalExceptionHandler } from '@jchpro/nest-common';
-import { Controller, Get, NotFoundException } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Post, ValidationPipe } from '@nestjs/common';
+import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
 import { describe, expect, it } from 'vitest';
 import { createApp } from './helpers/app.js';
 
+class CreateDogDto {
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
+  @IsInt()
+  @Min(0)
+  age!: number;
+}
+
 @Controller()
 class ThrowingController {
+  @Post('dogs')
+  createDog(@Body() dto: CreateDogDto) {
+    return dto;
+  }
+
   @Get('http-exception')
   httpException() {
     throw new NotFoundException('No such dog');
@@ -23,6 +39,7 @@ class ThrowingController {
 
 function appWith(productionMode: boolean) {
   return createApp({ controllers: [ThrowingController] }, (app) => {
+    app.useGlobalPipes(new ValidationPipe());
     GlobalExceptionHandler.setup(app, { http: new CommonExceptionHandlerBehaviorHttp(productionMode) });
   });
 }
@@ -42,6 +59,35 @@ describe('GlobalExceptionHandler', () => {
       timestamp: expect.any(String),
     });
     expect(new Date(res.body.timestamp).getTime()).not.toBeNaN();
+    expect(res.body.details).toBeUndefined();
+    await app.close();
+  });
+
+  it.each([true, false])('tells what was invalid when validation fails (production: %s)', async (productionMode) => {
+    const { app, http } = await appWith(productionMode);
+
+    const res = await http.post('/dogs').send({ name: '', age: -1 });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      error: 'BadRequestException',
+      message: 'Bad Request Exception',
+      details: expect.arrayContaining(['name should not be empty', 'age must not be less than 0']),
+      path: '/dogs',
+      statusCode: 400,
+      timestamp: expect.any(String),
+    });
+    expect(res.body.details).toHaveLength(2);
+    await app.close();
+  });
+
+  it('answers a valid request normally', async () => {
+    const { app, http } = await appWith(true);
+
+    const res = await http.post('/dogs').send({ name: 'Rex', age: 3 });
+
+    expect(res.status).toBe(201);
+    expect(res.body).toEqual({ name: 'Rex', age: 3 });
     await app.close();
   });
 

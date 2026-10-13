@@ -59,6 +59,25 @@ reach the client, only the log has them. An error's message can be anything (dri
 
 Please refer to the comments for `ExceptionHandlerBehaviorHttp` to see how it works.
 
+### Validation errors
+
+When Nest's `ValidationPipe` rejects a request, the response says what was wrong in `details`, one message per violated constraint
+(the `message` of that exception is only "Bad Request Exception"):
+
+```json
+{
+  "error": "BadRequestException",
+  "message": "Bad Request Exception",
+  "details": ["name should not be empty", "age must not be less than 0"],
+  "path": "/dogs",
+  "statusCode": 400,
+  "timestamp": "2024-02-01T17:40:12.101Z"
+}
+```
+
+Any recognized exception whose response body has a non-empty array of strings as its `message` gets `details`. Override `extractDetails(exception)`
+of the behavior to find them somewhere else, or to leave them out. They are not written to the log.
+
 ### Commonly used behavior
 
 This one changes what's being logged base on the environment (production or not).
@@ -87,7 +106,7 @@ What's important is that you return `ExceptionHandlingInstructions` in the `inst
 ### Types
 
 - `GlobalExceptionHandlerOptions` (third argument of `setup`): `logger` replaces the default logger, `unknownErrorName` is the `error` name used for thrown values that aren't errors (`"Unknown"` by default; a behavior can override it)
-- `CaughtExceptionHttpContext` is what a behavior's `instruct` receives: the `host`, the `exception`, whether it was `recognized` (an `HttpException`), and `data` (`CaughtExceptionHttpData`: `error`, `message`, `statusCode`, `path`, `timestamp`, `uuid`, `stack`). Mutate `data` to change the response, e.g. to translate the message. The generic `CaughtExceptionContext` and `CaughtExceptionData` are the base of it
+- `CaughtExceptionHttpContext` is what a behavior's `instruct` receives: the `host`, the `exception`, whether it was `recognized` (an `HttpException`), and `data` (`CaughtExceptionHttpData`: `error`, `message`, `details`, `statusCode`, `path`, `timestamp`, `uuid`, `stack`). Mutate `data` to change the response, e.g. to translate the message. The generic `CaughtExceptionContext` and `CaughtExceptionData` are the base of it
 - `ExceptionHandlingInstructions` is what `instruct` returns: `log` (`ExceptionLogArguments`, the message and optionally the stack trace for the logger) and `respondWith` (the response body)
 
 ### Supported contexts

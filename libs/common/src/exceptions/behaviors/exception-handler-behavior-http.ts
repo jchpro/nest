@@ -7,6 +7,8 @@ import { HttpException } from '@nestjs/common';
  * Behavior for exception handler in HTTP context:
  *   - recognized errors are of {@link HttpException} type;
  *   - recognized errors will never have UUID attached to the response object, and logged;
+ *   - the response object of a recognized error has the `details` the exception carries, if any
+ *     (see {@link extractDetails});
  *   - unrecognized errors will always have UUID attached to the response object, and logged;
  *   - the response object of an unrecognized error doesn't reveal what the error was: its `error` is the
  *     {@link unknownErrorName} and it has no `message` (both are in the log);
@@ -36,8 +38,28 @@ export class ExceptionHandlerBehaviorHttp extends ExceptionHandlerBehavior<Caugh
   }): ExceptionHandlingInstructions {
     return {
       log: this.recognizedLogArguments({ logMessage, data, exception }),
-      respondWith: this.prepareResponseObject(data, { uuid: false, stack: false })
+      respondWith: this.prepareResponseObject(
+        { ...data, details: data.details ?? this.extractDetails(exception) } as CaughtExceptionHttpData,
+        { uuid: false, stack: false }
+      )
     };
+  }
+
+  /**
+   * The messages of the exception's response body, if it has a non-empty array of strings as its `message`:
+   * that is what Nest's `ValidationPipe` makes of the violated constraints, and the `message` of the exception
+   * itself is only "Bad Request Exception" then. Anything else has no details.
+   */
+  protected extractDetails(exception: HttpException): string[] | undefined {
+    const body = exception.getResponse();
+    if (typeof body !== 'object' || body === null) {
+      return undefined;
+    }
+    const { message } = body as { message?: unknown };
+    if (Array.isArray(message) && message.length > 0 && message.every((item) => typeof item === 'string')) {
+      return message;
+    }
+    return undefined;
   }
 
   protected instructForUnrecognized({ logMessage, data, exception }: {

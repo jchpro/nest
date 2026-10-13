@@ -11,4 +11,10 @@ export type CaughtExceptionHttpContext = CaughtExceptionContext<
 export interface CaughtExceptionHttpData extends CaughtExceptionData {
   statusCode: number;
   path?: string;
+
+  /**
+   * What exactly was wrong, when the exception says so: the messages `ValidationPipe` collects,
+   * one per violated constraint. Only recognized exceptions have them.
+   */
+  details?: string[];
 }
