@@ -8,6 +8,7 @@ and [releasing.md](releasing.md).
 
 - `libs/` – npm workspaces, one package each: `common`, `config`, `i18n`, `mongoose` (`@jchpro/nest-<name>`). Every package has its own `package.json`, `tsconfig.json` (type-check, includes tests), `tsconfig.build.json` (build, excludes tests), `src/`, `readme.md` and `changelog.md`; `common` and `mongoose` also have `docs/`.
 - `apps/example-app` – private workspace (`"private": true`, never published, ignored by the release tooling): a small cats and owners app using the libs by package name from their built `dist/`. See its [readme](apps/example-app/readme.md). It builds in CI (type-check + build, no database there); keep it working when a lib's API changes.
+- `e2e/` – private workspace (never published, ignored by the release tooling): end-to-end tests, see [e2e/readme.md](e2e/readme.md). Each scenario boots a throwaway Nest app with the built libs and talks to it over HTTP; MongoDB is an in-memory replica set (`mongodb-memory-server`).
 - `tsconfig.libs.json` – shared compiler options (ESM, `nodenext`, decorator metadata).
 - `scripts/` – `verify-libs.mjs`, `check-versions.mjs`, `release.mjs` (+ `lib/libs.mjs`, the list of packages).
 - `.github/workflows/` – `pull_request.yaml` and one `publish-<lib>.yaml` per package.
@@ -21,12 +22,13 @@ and [releasing.md](releasing.md).
 | `npm run type-check` | Builds the libs, then `tsc --noEmit` for each (tests included) |
 | `npm run lint:check` | ESLint without autofix (use this, not `npm run lint`, which has `--fix`) |
 | `npm test` | Unit tests (Vitest, `libs/*/src/**/*.test.ts`); builds the libs first, needs no services |
+| `npm run test:e2e` | End-to-end tests (Vitest + supertest, `e2e/`); builds the libs first, needs no services (the first run downloads a `mongod` binary of ~210 MB to `~/.cache/mongodb-binaries`) |
 | `npm run start:example` | Builds libs and the example app and starts it; needs MongoDB (replica set), `apps/example-app/.env` and `docker compose up -d --wait` there |
 | `npm run verify:libs` | Packs the tarballs and checks them in a clean temporary project (ESM + `require`, optional peers, type declarations, the bin) |
 | `npm run check:versions` | `package.json` vs changelog vs peer ranges between our own packages |
 | `npm run release -- <command>` | Release helper, see [releasing.md](releasing.md) |
 
-Before finishing a change, run `type-check`, `lint:check`, `test` and, when package metadata, `exports`, peers or `files` changed, `verify:libs`.
+Before finishing a change, run `type-check`, `lint:check`, `test`, `test:e2e` (when a lib's behavior changed) and, when package metadata, `exports`, peers or `files` changed, `verify:libs`.
 
 ## Libraries
 
@@ -44,6 +46,7 @@ Before finishing a change, run `type-check`, `lint:check`, `test` and, when pack
 - Unit tests live next to the code (`*.test.ts`). Import from `vitest` explicitly (`globals: false`).
 - Vitest runs the tests through the SWC plugin (`unplugin-swc`) so `emitDecoratorMetadata` works for Nest's DI.
 - `mongoose` tests import `@jchpro/nest-common` from its built `dist/`, hence `npm test` builds the libs first.
+- E2E tests (`e2e/tests/*.e2e.test.ts`) are for behavior across a real HTTP app and a real MongoDB; keep the unit tests for the logic. Each test file builds its own app (`createApp`) and uses its own database (`uniqueDatabaseUri`). A known bug is recorded as `it.fails(...)` with a link to its issue, and the `.fails` is removed in the PR which fixes it.
 
 ## Versioning and releasing
 
