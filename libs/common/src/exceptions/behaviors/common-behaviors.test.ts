@@ -24,7 +24,7 @@ describe('CommonExceptionHandlerBehaviorHttp', () => {
      };
    }
 
-   it('should attach uuid to the response object and log it, and log stack in production mode for unrecognized exception', () => {
+   it('should attach uuid to the response object and log it, log stack and not reveal what the error was in production mode for unrecognized exception', () => {
      // Given
      create(true);
 
@@ -35,8 +35,7 @@ describe('CommonExceptionHandlerBehaviorHttp', () => {
      expect(instructions).toEqual({
        log: ['[uuid] error: message', 'stack'],
        respondWith: {
-         error: 'error',
-         message: 'message',
+         error: 'InternalServerError',
          uuid: 'uuid',
          timestamp: 'ts',
          statusCode: 500

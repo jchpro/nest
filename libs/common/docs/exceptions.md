@@ -51,8 +51,11 @@ Log entry:
 with
 
 ```text
-[Nest] 3052  - 01.02.2024, 18:39:37   ERROR [GlobalExceptionHandler] [3d29e075-bf6e-4169-a309-6a8ce930e77a] InternalServerError
+[Nest] 3052  - 01.02.2024, 18:39:37   ERROR [GlobalExceptionHandler] [3d29e075-bf6e-4169-a309-6a8ce930e77a] Error: connection to the database lost
 ```
+
+The response of an unrecognized error says that something went wrong and gives the `uuid` to find it in the log, but never what it was: neither the name nor the message of the error
+reach the client, only the log has them. An error's message can be anything (driver errors, file paths, queries), it is not something to hand to whoever made the request.
 
 Please refer to the comments for `ExceptionHandlerBehaviorHttp` to see how it works.
 
@@ -69,6 +72,8 @@ async function bootstrap() {
   });
 }
 ```
+
+In production mode it responds as described above. Otherwise the response of an unrecognized error carries its real name, message and stack trace (and no `uuid`), which is handy while developing.
 
 Again, refer to comment for `CommonExceptionHandlerBehaviorHttp` to see if it's right for you.
 

@@ -45,8 +45,7 @@ describe('GlobalExceptionHandler', () => {
     await app.close();
   });
 
-  // Expected failure until https://github.com/jchpro/nest/issues/46 is fixed: the name and the message of the error are sent to the client
-  it.fails('hides the details of an unknown error and tags it with an UUID in production mode', async () => {
+  it('hides the details of an unknown error and tags it with an UUID in production mode', async () => {
     const { app, http } = await appWith(true);
 
     const res = await http.get('/unknown-error');
@@ -63,24 +62,45 @@ describe('GlobalExceptionHandler', () => {
     await app.close();
   });
 
-  it('attaches the stack trace instead of an UUID to an unknown error outside of production mode', async () => {
+  it('shows the details of an unknown error, with the stack trace instead of an UUID, outside of production mode', async () => {
     const { app, http } = await appWith(false);
 
     const res = await http.get('/unknown-error');
 
     expect(res.status).toBe(500);
+    expect(res.body.error).toBe('Error');
+    expect(res.body.message).toBe('database exploded');
     expect(res.body.uuid).toBeUndefined();
     expect(res.body.stack).toContain('database exploded');
     await app.close();
   });
 
-  it('answers with 500 also when something other than an error was thrown', async () => {
+  it('answers with 500 also when something other than an error was thrown, without revealing it in production mode', async () => {
     const { app, http } = await appWith(true);
 
     const res = await http.get('/thrown-value');
 
     expect(res.status).toBe(500);
     expect(res.body.error).toBe('InternalServerError');
+    expect(JSON.stringify(res.body)).not.toContain('not an error');
+    await app.close();
+  });
+
+  it('hides the details of an unknown error with the default behavior too', async () => {
+    const { app, http } = await createApp({ controllers: [ThrowingController] }, (nestApp) => {
+      GlobalExceptionHandler.setup(nestApp, { http: true });
+    });
+
+    const res = await http.get('/unknown-error');
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({
+      error: 'InternalServerError',
+      path: '/unknown-error',
+      statusCode: 500,
+      timestamp: expect.any(String),
+      uuid: expect.any(String),
+    });
     await app.close();
   });
 });

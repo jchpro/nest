@@ -8,6 +8,8 @@ import { HttpException } from '@nestjs/common';
  *   - recognized errors are of {@link HttpException} type;
  *   - recognized errors will never have UUID attached to the response object, and logged;
  *   - unrecognized errors will always have UUID attached to the response object, and logged;
+ *   - the response object of an unrecognized error doesn't reveal what the error was: its `error` is the
+ *     {@link unknownErrorName} and it has no `message` (both are in the log);
  *   - stacktrace will never be attached to the response object.
  */
 export class ExceptionHandlerBehaviorHttp extends ExceptionHandlerBehavior<CaughtExceptionHttpContext, HttpException> {
@@ -45,8 +47,16 @@ export class ExceptionHandlerBehaviorHttp extends ExceptionHandlerBehavior<Caugh
   }): ExceptionHandlingInstructions {
     return {
       log: this.unrecognizedLogArguments({ logMessage, data, exception }),
-      respondWith: this.prepareResponseObject(data, { uuid: true, stack: false })
+      respondWith: this.prepareResponseObject(this.withoutDetails(data), { uuid: true, stack: false })
     };
+  }
+
+  /**
+   * What a client may learn about an unrecognized error: that it happened, not what it was.
+   * The name and the message of such an error can be anything (driver errors, paths, queries...).
+   */
+  protected withoutDetails(data: CaughtExceptionHttpData): CaughtExceptionHttpData {
+    return { ...data, error: this.unknownErrorName, message: undefined };
   }
 
 }

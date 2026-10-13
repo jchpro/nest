@@ -47,7 +47,7 @@ describe('ExceptionHandlerBehaviorHttp', () => {
     });
   });
 
-  it('should return proper instructions for unrecognized error', () => {
+  it('should return proper instructions for unrecognized error, not revealing what it was in the response', () => {
     // Given
     const context: CaughtExceptionHttpContext = {
       host: {} as any,
@@ -70,8 +70,7 @@ describe('ExceptionHandlerBehaviorHttp', () => {
     expect(instructions).toEqual({
       log: ['[uuid] error: message', 'stack'],
       respondWith: {
-        error: 'error',
-        message: 'message',
+        error: 'InternalServerError',
         uuid: 'uuid',
         timestamp: 'ts',
         statusCode: 500
