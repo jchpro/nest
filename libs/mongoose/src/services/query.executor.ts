@@ -37,8 +37,8 @@ export class QueryExecutor<TDoc extends Document, TRaw = any> {
     return new QueryResult(
       items,
       total,
-      this.queryOptions.limit,
-      this.queryOptions.skip
+      this.queryOptions.skip,
+      this.queryOptions.limit
     );
   }
 

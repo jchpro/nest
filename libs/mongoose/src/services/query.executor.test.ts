@@ -79,4 +79,29 @@ describe('QueryExecutor', () => {
     expect(result.items).toEqual([new Entity('A'), new Entity('B')]);
     expect(result.total).toEqual(10);
   });
+
+  it('should pass the offset and the limit to the result, each in its place', async () => {
+    // Given
+    const model = new MockModel([new Entity('A')], 10);
+    const executor = new QueryExecutor(model as any, { offset: 4, limit: 2 });
+
+    // When
+    const result = await executor.execute();
+
+    // Then
+    expect(result.offset).toBe(4);
+    expect(result.limit).toBe(2);
+  });
+
+  it('should leave the offset and the limit of the result undefined when none were requested', async () => {
+    // Given
+    const executor = new QueryExecutor(new MockModel([], 0) as any, {});
+
+    // When
+    const result = await executor.execute();
+
+    // Then
+    expect(result.offset).toBeUndefined();
+    expect(result.limit).toBeUndefined();
+  });
 });

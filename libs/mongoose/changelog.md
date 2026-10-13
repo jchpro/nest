@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `QueryResult.offset` and `QueryResult.limit` returned by `QueryExecutor` were swapped, and now hold the offset and the (capped) limit of the query.
 - The migration lock is atomic: instances starting at the same time could both take it and run the same migrations twice. Acquiring it is now one upsert guarded by a unique index (created by `Migrator` itself, so it works with `autoIndex` off), and an instance releases only the lock it holds. The lock document of an earlier version gets a `key` and is used as it is, so a rolling deploy with older instances keeps working. The lock collection gets a new unique partial index on `key`.
 
 ## [2.0.0] - 2026-10-13
