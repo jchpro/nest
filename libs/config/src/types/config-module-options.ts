@@ -29,6 +29,11 @@ export interface ConfigModuleOptions {
 
   /**
    * Error to throw when validation of the config object fails.
+   * Second argument maps each of the errors to the name of the environment variable it concerns
+   * (errors for properties without a known variable are absent).
    */
-  readonly errorFactory?: (validationErrors: ValidationError[]) => any;
+  readonly errorFactory?: (
+    validationErrors: ValidationError[],
+    variableNames: ReadonlyMap<ValidationError, string>,
+  ) => any;
 }

@@ -25,4 +25,26 @@ describe('EnvPropertiesValidationError', () => {
     // Then
     expect(error.message).toBe('error_1\nerror_2\nerror_3');
   });
+
+  it('should name the environment variable when it is known', () => {
+    // Given
+    class MyConfig {}
+    const inputError: ValidationError = {
+      target: new MyConfig(),
+      property: 'myField',
+      constraints: { isNotEmpty: 'x', isString: 'y' },
+      toString: () => 'original',
+    };
+
+    // When
+    const error = new EnvPropertiesValidationError(
+      [inputError],
+      new Map([[inputError, 'MY_FIELD']]),
+    );
+
+    // Then
+    expect(error.message).toBe(
+      'MyConfig: environment variable MY_FIELD (property myField) has failed the following constraints: isNotEmpty, isString',
+    );
+  });
 });
