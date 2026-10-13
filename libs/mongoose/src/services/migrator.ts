@@ -56,6 +56,7 @@ export class Migrator {
       logger.log(`Migrations run now: ${runNow}`);
     } catch (err) {
       logger.error(`Failed to run all migrations`, err);
+      throw err;
     } finally {
       const released = await service.releaseLock();
       if (released) {
