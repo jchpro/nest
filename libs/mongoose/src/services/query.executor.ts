@@ -67,6 +67,9 @@ export class QueryExecutor<TDoc extends Document, TRaw = any> {
       } else {
         queryOptions.limit = limit;
       }
+    } else if (typeof this.maxLimit === 'number') {
+      // No limit requested: the maximum one applies, otherwise leaving the parameter out would dodge it
+      queryOptions.limit = this.maxLimit;
     }
     if (typeof sortBy === 'string') {
       queryOptions.sort = {

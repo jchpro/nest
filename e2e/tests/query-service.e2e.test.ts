@@ -97,8 +97,7 @@ describe('QueryService with the pagination and sorting DTOs', () => {
     expect(res.headers['x-total-count']).toBe('7');
   });
 
-  // Expected failure until https://github.com/jchpro/nest/issues/48 is decided: the maximum limit is not applied without a requested limit
-  it.fails('applies the maximum limit when no limit is requested', async () => {
+  it('applies the maximum limit when no limit is requested', async () => {
     const res = await testApp.http.get('/dogs').query({ sortBy: 'name' });
 
     expect(res.body).toHaveLength(5);
