@@ -1,9 +1,9 @@
 // Packs every workspace package and installs the tarballs into a throwaway project, to prove the published artifacts
 // work outside this repo: the files list is complete, the `exports` map resolves (ESM `import` and `require`), the
 // peer dependency declarations are sufficient, optional peers are really optional, and the type declarations compile
-// for a consumer. Run it with `npm run verify:libs` (the libs must be built first, `prepack` is not used on purpose).
+// for a consumer, and the tarballs contain the readme, changelog and docs. Run it with `npm run verify:libs` (the libs must be built first, `prepack` is not used on purpose).
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
@@ -29,6 +29,23 @@ try {
   }
   const files = readdirSync(tarballs);
   console.log(files.join('\n'));
+
+  step('Checking the tarballs contain the docs, readme, changelog and build output');
+  for (const [i, w] of workspaces.entries()) {
+    const pkg = packages[i];
+    const tarball = `${pkg.name.replace('@', '').replace('/', '-')}-${pkg.version}.tgz`;
+    const contents = run('tar', ['-tzf', tarball], tarballs).split(/\r?\n/).map(l => l.trim().replace(/^package\//, ''));
+    const docsDir = join(root, w, 'docs');
+    const expected = [
+      'package.json', 'readme.md', 'changelog.md', 'dist/index.js', 'dist/index.d.ts',
+      ...(existsSync(docsDir) ? readdirSync(docsDir).map(f => `docs/${f}`) : []),
+    ];
+    const missing = expected.filter(f => !contents.includes(f));
+    if (missing.length) {
+      throw new Error(`${pkg.name} tarball is missing: ${missing.join(', ')}`);
+    }
+    console.log(`tar ok  ${pkg.name} (${expected.length} expected files present)`);
+  }
 
   step('Installing the tarballs into a clean project (required peers only)');
   writeFileSync(join(consumer, 'package.json'), JSON.stringify({ name: 'consumer', private: true, type: 'module' }));
