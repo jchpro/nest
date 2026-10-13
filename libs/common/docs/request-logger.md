@@ -28,5 +28,5 @@ Factory accepts:
 - `morgan.FormatFn` for custom formatting;
 - `{ format: morgan.FormatFn; options: options: morgan.Options }` for custom formatting and options;
 
-The accepted value is typed as `RequestLoggerConfig`; the predefined formats are typed as `RequestLoggerFormat`.
+The accepted value is typed as `RequestLoggerConfig`; the predefined formats are typed as `RequestLoggerFormat`, which is also a real object (`RequestLoggerFormat.DEV`, ...) that can be passed to `IsEnum` in config classes.
 Passing nothing returns `undefined` (no logger), so a config value that may be unset can be passed straight through.
