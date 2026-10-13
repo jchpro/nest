@@ -1,7 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import type { OpenAPIObject, SwaggerCustomOptions, SwaggerDocumentOptions } from '@nestjs/swagger';
 import { type SwaggerUiOptions } from '../types/swagger-ui.options.js';
-import { SwaggerModule } from '../internal/swagger.js';
+import { SwaggerModule } from '@nestjs/swagger';
 
 class SwaggerUi {
 

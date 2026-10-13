@@ -1,5 +1,5 @@
 import { PolymorphismHelper } from '../../index.js';
-import { ApiProperty, getSchemaPath } from '../internal/swagger.js';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { type ApiPropertyOptions } from '@nestjs/swagger';
 
 /**

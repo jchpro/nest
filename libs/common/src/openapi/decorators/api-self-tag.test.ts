@@ -5,7 +5,7 @@ const state = vi.hoisted(() => ({
   appliedToTarget: undefined as any,
 }));
 
-vi.mock('../internal/swagger', () => {
+vi.mock('@nestjs/swagger', () => {
   return {
     ApiTags: () => (target: any) => {
       state.appliedToTarget = target;
@@ -17,7 +17,7 @@ describe('ApiSelfTag', () => {
   let mockModule: any;
 
   beforeEach(async () => {
-    mockModule = await import('../internal/swagger.js');
+    mockModule = await import('@nestjs/swagger');
     state.appliedToTarget = undefined;
   });
 

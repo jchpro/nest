@@ -1,5 +1,5 @@
 import { type DynamicModule, type FactoryProvider, Module, type Provider, type ValueProvider } from '@nestjs/common';
-import { compare, hash } from '../internal/bcrypt.js';
+import { compare, hash } from 'bcrypt';
 import { type FactoryProviderOptions } from '../../types/nestjs.js';
 import { PasswordUtilityService } from './services/password-utility.service.js';
 import { type AuthUtilityOptions } from "./types/auth-utility.options.js";

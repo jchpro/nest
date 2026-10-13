@@ -1,6 +1,6 @@
 import { applyDecorators, SetMetadata } from '@nestjs/common';
 import { type ApiResponseOptions } from '@nestjs/swagger';
-import { ApiForbiddenResponse } from "../internal/swagger.js";
+import { ApiForbiddenResponse } from '@nestjs/swagger';
 import { REQUIRED_PERMISSIONS } from "../../auth/authorization/consts/metadata-keys.js";
 
 /**

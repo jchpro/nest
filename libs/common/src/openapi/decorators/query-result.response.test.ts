@@ -1,3 +1,4 @@
+import type * as SwaggerModuleType from '@nestjs/swagger';
 import { QueryResult } from '../../index.js';
 import { ApiQueryResultResponse } from '../index.js';
 import type * as NestCommonModule from '@nestjs/common';
@@ -15,6 +16,14 @@ class MyEntity {
 const state = vi.hoisted(() => ({
   useInterceptorArgs: [] as any[],
 }));
+
+vi.mock('@nestjs/swagger', async (importOriginal) => {
+  const actual = await importOriginal<typeof SwaggerModuleType>();
+  return {
+    ...actual,
+    ApiOkResponse: vi.fn(actual.ApiOkResponse),
+  };
+});
 
 vi.mock('@nestjs/common', async (importOriginal) => {
   const actual = await importOriginal<typeof NestCommonModule>();
@@ -40,7 +49,7 @@ describe('QueryResultResponse', () => {
 
   beforeEach(async () => {
     state.useInterceptorArgs = [];
-    mockSwagger = await vi.importActual('../internal/swagger.js');
+    mockSwagger = await import('@nestjs/swagger');
     mockCommon = await import('@nestjs/common');
   });
 

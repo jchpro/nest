@@ -1,7 +1,7 @@
 import { CoerceBoolean } from '../../index.js';
 import { Expose } from 'class-transformer';
 import { IsOptional } from 'class-validator';
-import { ApiPropertyOptional } from '../internal/swagger.js';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import type { SortingParams as SortingParamsObject } from '../../index.js';
 
 /**

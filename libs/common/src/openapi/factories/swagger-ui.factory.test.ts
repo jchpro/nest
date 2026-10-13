@@ -1,9 +1,9 @@
 import { type SwaggerUi, SwaggerUiFactory } from '../index.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type * as SwaggerInternalModule from '../internal/swagger.js';
+import type * as SwaggerModuleType from '@nestjs/swagger';
 
-vi.mock('../internal/swagger', async (importOriginal) => {
-  const actual = await importOriginal<typeof SwaggerInternalModule>();
+vi.mock('@nestjs/swagger', async (importOriginal) => {
+  const actual = await importOriginal<typeof SwaggerModuleType>();
   return {
     ...actual,
     SwaggerModule: {
@@ -21,7 +21,7 @@ describe('SwaggerUiFactory', () => {
 
   beforeEach(async () => {
     (ui as any) = undefined;
-    mockModule = (await import('../internal/swagger.js')).SwaggerModule;
+    mockModule = (await import('@nestjs/swagger')).SwaggerModule;
   });
 
   it('should create instance passing right parameters to `SwaggerModule.createDocument`', () => {
