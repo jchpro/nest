@@ -66,7 +66,8 @@ export async function generate() {
       return {
         id: `${ts}_${namePart}`,
         token: `migration_${ts}`,
-        importPath: `./${relativePath}`
+        // ESM (`nodenext`) needs the extension; TypeScript resolves `.js` to the `.ts` file
+        importPath: `./${relativePath}.js`
       };
     })
   const collectorContent = collectorTemplate(libName, migrations);
