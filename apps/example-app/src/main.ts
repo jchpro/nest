@@ -6,6 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder } from '@nestjs/swagger';
 import { AppConfig, Environment } from './app.config.js';
 import { AppModule } from './app.module.js';
+import { DEMO_USER_HEADER } from './auth/demo-user.js';
 
 async function bootstrap() {
   // The config is resolved as soon as `AppModule` is imported, so it is available before the app is created
@@ -25,6 +26,8 @@ async function bootstrap() {
       .setTitle('Example app')
       .setDescription('Cats and their owners, built with the @jchpro/nest-* libraries')
       .setVersion('1.0')
+      // Write endpoints are "secured" by choosing a demo user, see `auth/demo-user.ts`
+      .addApiKey({ type: 'apiKey', name: DEMO_USER_HEADER, in: 'header' }, 'demo-user')
       .build(),
   );
   swaggerUi.serve('docs', { serveDoc: true });
