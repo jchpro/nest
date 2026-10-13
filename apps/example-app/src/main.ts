@@ -2,6 +2,7 @@ import { GlobalExceptionHandler, CommonExceptionHandlerBehaviorHttp, LoggerFacto
 import { SwaggerUiFactory } from '@jchpro/nest-common/openapi';
 import { RequestLoggerFactory } from '@jchpro/nest-common/request-logger';
 import { ConfigResolver } from '@jchpro/nest-config';
+import { Migrator } from '@jchpro/nest-mongoose';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder } from '@nestjs/swagger';
 import { AppConfig, Environment } from './app.config.js';
@@ -31,6 +32,9 @@ async function bootstrap() {
       .build(),
   );
   swaggerUi.serve('docs', { serveDoc: true });
+
+  // Rejects when a migration fails, so the app does not start on a half-migrated database
+  await new Migrator(app).up();
 
   await app.listen(config.port);
 }
