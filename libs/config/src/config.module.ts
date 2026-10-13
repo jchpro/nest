@@ -32,10 +32,11 @@ export class ConfigModule {
               allErrors.push(...errors);
             });
             if (allErrors.length > 0) {
+              const variableNames = ConfigModule.mapErrorsToVariableNames(allErrors);
               if (typeof options.errorFactory === 'function') {
-                throw options.errorFactory(allErrors);
+                throw options.errorFactory(allErrors, variableNames);
               }
-              throw new EnvPropertiesValidationError(allErrors);
+              throw new EnvPropertiesValidationError(allErrors, variableNames);
             }
             return config;
           },
@@ -78,6 +79,25 @@ export class ConfigModule {
         },
       };
     });
+  }
+
+  private static mapErrorsToVariableNames(
+    errors: ValidationError[],
+  ): Map<ValidationError, string> {
+    const names = new Map<ValidationError, string>();
+    errors.forEach((error) => {
+      const klass = error.target?.constructor;
+      if (!klass) {
+        return;
+      }
+      const propertiesMetadata: EnvPropertyMetadata[] =
+        Reflect.getMetadata(METADATA_KEY, klass) ?? [];
+      const metadata = propertiesMetadata.find((item) => item.propertyKey === error.property);
+      if (metadata) {
+        names.set(error, metadata.variableName);
+      }
+    });
+    return names;
   }
 
   private static collectRelevantVariables(

@@ -108,4 +108,49 @@ describe('ConfigModule', () => {
     // Expect
     expect(testRunner).toThrow(CustomError);
   });
+
+  it('should name the environment variable in the default error message', () => {
+    // Given
+    class RenamedConfig {
+      @EnvProperty('MY_FIELD')
+      @IsString()
+      myField!: string;
+    }
+
+    // When
+    const testRunner = () => {
+      ConfigModule.forRoot({
+        load: [RenamedConfig],
+      });
+    };
+
+    // Then
+    expect(testRunner).toThrow(/MY_FIELD \(property myField\)/);
+  });
+
+  it('should pass variable names of the failed properties to `errorFactory`', () => {
+    // Given
+    class RenamedConfig {
+      @EnvProperty('MY_FIELD')
+      @IsString()
+      myField!: string;
+    }
+    let received: ReadonlyMap<unknown, string> | undefined;
+
+    // When
+    try {
+      ConfigModule.forRoot({
+        load: [RenamedConfig],
+        errorFactory: (errors, variableNames) => {
+          received = variableNames;
+          return new Error(String(errors.length));
+        },
+      });
+    } catch {
+      // expected
+    }
+
+    // Then
+    expect([...(received?.values() ?? [])]).toEqual(['MY_FIELD']);
+  });
 });

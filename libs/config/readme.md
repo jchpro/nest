@@ -59,7 +59,7 @@ export class AppModule {}
 
 You can customize behavior of almost any initialization step performed by external packages, as well as provide custom error to throw when validation fails. Check `ConfigModuleOptions` for more info.
 
-When validation fails, `EnvPropertiesValidationError` is thrown by default, its message lists the failed properties one per line. Pass `errorFactory` in the options to throw your own error instead.
+When validation fails, `EnvPropertiesValidationError` is thrown by default, its message lists the failed properties one per line, naming the environment variable each of them is read from (e.g. `MY_FIELD`). Pass `errorFactory` in the options to throw your own error instead; it receives the original `ValidationError[]` and a `Map` from each error to its environment variable name.
 
 ### Use your classes in the app
 
