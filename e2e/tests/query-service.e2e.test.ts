@@ -4,7 +4,7 @@ import { Controller, Get, Query, ValidationPipe } from '@nestjs/common';
 import { InjectModel, MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiPropertyOptional, IntersectionType } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
-import { type FilterQuery, type Model } from 'mongoose';
+import { type FilterQuery, type HydratedDocument, type Model } from 'mongoose';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createApp, type TestApp } from './helpers/app.js';
 import { uniqueDatabaseUri } from './helpers/mongo.js';
@@ -22,6 +22,8 @@ class Dog {
 }
 
 const DogSchema = SchemaFactory.createForClass(Dog);
+
+type DogDocument = HydratedDocument<Dog>;
 
 class DogsQuery
   extends IntersectionType(PaginationParams, SortingType<Dog>(['name', 'age']))
@@ -41,13 +43,13 @@ class DogsQuery
 class DogsController {
   constructor(
     private readonly queryService: QueryService,
-    @InjectModel(Dog.name) private readonly dogModel: Model<Dog>,
+    @InjectModel(Dog.name) private readonly dogModel: Model<DogDocument>,
   ) {}
 
   @Get()
   @ApiQueryResultResponse(Dog, { map: (dog) => ({ name: dog.name, age: dog.age, breed: dog.breed }) })
   list(@Query() query: DogsQuery) {
-    return this.queryService.execute(this.dogModel, query, query);
+    return this.queryService.execute<DogDocument>(this.dogModel, query, query);
   }
 }
 
