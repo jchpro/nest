@@ -62,4 +62,4 @@ Before finishing a change, run `type-check`, `lint:check`, `test` and, when pack
 - `main` is the only long-lived branch and must stay green; don't push to it directly.
 - Work on a short-lived branch per change (`feat/...`, `fix/...`, `chore/...`), commit in small logical steps, open a PR against `main` when the work is ready.
 - The owner reviews and merges PRs. Don't merge or enable auto-merge unless asked.
-- The owner allows pushing docs-only changes straight to main (owner bypass); I did not carry that over, add it if you want it here too.
+- The owner may push docs-only changes (readmes, changelogs, `CLAUDE.md`) straight to `main` with the branch-protection bypass; don't do that yourself unless asked. Code and CI changes always go through a PR.
