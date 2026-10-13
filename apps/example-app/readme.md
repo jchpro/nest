@@ -33,6 +33,7 @@ The read endpoints are public. The write endpoints need a demo user: in Swagger 
 5. `POST /owners/{id}/transfer-cats` moves the cats to another owner (a transaction touching three documents). It is on the `strict` throttling tier, so
    calling it twice in 10 seconds gives `429 Too Many Requests`.
 6. Try `POST /owners` as `cat-sitter`, or without a user: `403 Forbidden`.
+7. `GET /cats?sortBy=hacker` or `POST /cats` with an empty `name`: `400` with the messages of what was invalid in `details`.
 
 ## Where each feature is used
 
