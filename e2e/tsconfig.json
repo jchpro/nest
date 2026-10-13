@@ -1,0 +1,7 @@
+{
+  "extends": "../tsconfig.libs.json",
+  "include": [
+    "tests",
+    "global-setup.ts"
+  ]
+}
