@@ -7,7 +7,7 @@ export interface FilterQueryProvider<TRaw = any> {
 export interface CrudOptions {
 
   /**
-   * Maximum limit value for queries, optional.
+   * Maximum limit value for queries, optional. It caps a requested limit and applies when none is requested.
    */
   maxLimit?: number;
 }

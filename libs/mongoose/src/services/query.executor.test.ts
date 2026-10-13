@@ -79,4 +79,57 @@ describe('QueryExecutor', () => {
     expect(result.items).toEqual([new Entity('A'), new Entity('B')]);
     expect(result.total).toEqual(10);
   });
+
+  it('should pass the offset and the limit to the result, each in its place', async () => {
+    // Given
+    const model = new MockModel([new Entity('A')], 10);
+    const executor = new QueryExecutor(model as any, { offset: 4, limit: 2 });
+
+    // When
+    const result = await executor.execute();
+
+    // Then
+    expect(result.offset).toBe(4);
+    expect(result.limit).toBe(2);
+  });
+
+  it('should leave the offset and the limit of the result undefined when none were requested', async () => {
+    // Given
+    const executor = new QueryExecutor(new MockModel([], 0) as any, {});
+
+    // When
+    const result = await executor.execute();
+
+    // Then
+    expect(result.offset).toBeUndefined();
+    expect(result.limit).toBeUndefined();
+  });
+
+  describe('maximum limit', () => {
+    it('should cap a requested limit above the maximum', async () => {
+      const executor = new QueryExecutor(new MockModel([], 0) as any, { limit: 100 }, { crud: { maxLimit: 25 } });
+
+      expect(executor.queryOptions.limit).toBe(25);
+      expect((await executor.execute()).limit).toBe(25);
+    });
+
+    it('should keep a requested limit within the maximum', () => {
+      const executor = new QueryExecutor({} as any, { limit: 10 }, { crud: { maxLimit: 25 } });
+
+      expect(executor.queryOptions.limit).toBe(10);
+    });
+
+    it('should apply the maximum when no limit was requested', async () => {
+      const executor = new QueryExecutor(new MockModel([], 0) as any, { offset: 5 }, { crud: { maxLimit: 25 } });
+
+      expect(executor.queryOptions).toEqual({ skip: 5, limit: 25 });
+      expect((await executor.execute()).limit).toBe(25);
+    });
+
+    it('should not limit anything when there is no maximum and no limit was requested', () => {
+      const executor = new QueryExecutor({} as any, {}, { crud: {} });
+
+      expect(executor.queryOptions.limit).toBeUndefined();
+    });
+  });
 });

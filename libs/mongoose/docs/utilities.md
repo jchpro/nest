@@ -12,7 +12,7 @@
 
 - `QueryExecutor` - holds the query data (`QueryData` of `@jchpro/nest-common`: offset, limit, sorting) and executes it for a given Mongoose model, returning a `QueryResult`
 - `QueryService` - prepares a `QueryExecutor` passing global config (`prepare()`), or runs it right away (`execute()`). Besides the model and the data it takes an optional `FilterQueryProvider` (an object with `getFilters()`, e.g. a query DTO), a projection and other Mongoose query options (`OtherQueryOptions`)
-- `MongooseCrudModule` provides `QueryService`, with `forRoot` (global), `forFeature`, `forRootAsync` and `forFeatureAsync`. `CrudOptions.maxLimit` caps the requested `limit`
+- `MongooseCrudModule` provides `QueryService`, with `forRoot` (global), `forFeature`, `forRootAsync` and `forFeatureAsync`. `CrudOptions.maxLimit` is the maximum page size: it caps the requested `limit`, and applies when no `limit` is requested
 
 ```typescript
 MongooseCrudModule.forRoot({ maxLimit: 25 })
