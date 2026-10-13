@@ -6,7 +6,8 @@ import { type CaughtExceptionHttpData } from '../types/caught-exception-http-con
 /**
  * Common behavior for exception handler in HTTP context:
  *   - unrecognized errors will have UUID attached to the response object, and logged in `productionMode`;
- *   - stacktrace will be attached to the response object only when not in `productionMode`;
+ *   - in `productionMode` the response object of an unrecognized error doesn't reveal what the error was
+ *     (see {@link ExceptionHandlerBehaviorHttp}), otherwise it carries its name, message and stacktrace;
  *   - rest as in {@link ExceptionHandlerBehaviorHttp}.
  */
 export class CommonExceptionHandlerBehaviorHttp extends ExceptionHandlerBehaviorHttp {
@@ -24,7 +25,7 @@ export class CommonExceptionHandlerBehaviorHttp extends ExceptionHandlerBehavior
   }): ExceptionHandlingInstructions {
     return {
       log: this.unrecognizedLogArguments({ logMessage, data, exception }),
-      respondWith: this.prepareResponseObject(data, {
+      respondWith: this.prepareResponseObject(this.productionMode ? this.withoutDetails(data) : data, {
         uuid: this.productionMode,
         stack: !this.productionMode
       })

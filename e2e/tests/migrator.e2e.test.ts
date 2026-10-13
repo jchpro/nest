@@ -1,6 +1,6 @@
 import { type Migration, MigrationWrapper, MongoMigrateModule, Migrator } from '@jchpro/nest-mongoose';
 import { type INestApplication } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseModule, type MongooseModuleOptions } from '@nestjs/mongoose';
 import { type Connection } from 'mongoose';
 import { afterEach, describe, expect, it } from 'vitest';
 import { createApp } from './helpers/app.js';
@@ -14,8 +14,10 @@ describe('Migrator', () => {
   });
 
   /** Starts an "instance" of the app against the database, like a restart of a real one. */
-  async function startApp(uri: string, migrations: MigrationWrapper[]) {
-    const { app } = await createApp({ imports: [MongooseModule.forRoot(uri), MongoMigrateModule.withMigrations(migrations)] });
+  async function startApp(uri: string, migrations: MigrationWrapper[], mongooseOptions?: MongooseModuleOptions) {
+    const { app } = await createApp({
+      imports: [MongooseModule.forRoot(uri, mongooseOptions), MongoMigrateModule.withMigrations(migrations)],
+    });
     apps.push(app);
     return app;
   }
@@ -84,8 +86,7 @@ describe('Migrator', () => {
     expect(await lock(app)).toMatchObject({ locked: true, processId: 1 });
   });
 
-  // Expected failure until https://github.com/jchpro/nest/issues/47 is fixed: acquiring the lock is not atomic
-  it.fails('lets only one of the instances starting at the same time run the migrations', async () => {
+  it('lets only one of the instances starting at the same time run the migrations', async () => {
     const uri = uniqueDatabaseUri('migrator');
     const migrations = () => [recording('slow', { delayMs: 300 })];
     const [a, b] = await Promise.all([startApp(uri, migrations()), startApp(uri, migrations())]);
@@ -94,6 +95,52 @@ describe('Migrator', () => {
 
     expect(await ran(a)).toEqual(['slow']);
     expect(await changelog(a)).toEqual(['slow']);
+  });
+
+  it('lets only one of many instances starting at the same time run the migrations, whatever the timing', async () => {
+    const uri = uniqueDatabaseUri('migrator');
+    const instances = await Promise.all(Array.from({ length: 5 }, () => startApp(uri, [recording('slow', { delayMs: 200 })])));
+
+    await Promise.all(instances.map((app) => new Migrator(app).up()));
+
+    expect(await ran(instances[0])).toEqual(['slow']);
+    expect(await connectionOf(instances[0]).db!.collection('changelog-lock').countDocuments()).toBe(1);
+  });
+
+  it('keeps the lock atomic when the application builds no indexes on its own (autoIndex off)', async () => {
+    const uri = uniqueDatabaseUri('migrator');
+    const options = { autoIndex: false };
+    const [a, b] = await Promise.all([
+      startApp(uri, [recording('slow', { delayMs: 300 })], options),
+      startApp(uri, [recording('slow', { delayMs: 300 })], options),
+    ]);
+
+    await Promise.all([new Migrator(a).up(), new Migrator(b).up()]);
+
+    expect(await ran(a)).toEqual(['slow']);
+  });
+
+  it('takes over the lock document of an earlier version, which has no key', async () => {
+    const uri = uniqueDatabaseUri('migrator');
+    const app = await startApp(uri, [recording('m1')]);
+    await connectionOf(app).db!.collection('changelog-lock').insertOne({ locked: false, processId: 1 });
+
+    await new Migrator(app).up();
+
+    expect(await ran(app)).toEqual(['m1']);
+    expect(await connectionOf(app).db!.collection('changelog-lock').countDocuments()).toBe(1);
+    expect(await lock(app)).toMatchObject({ locked: false, key: expect.any(String) });
+  });
+
+  it('can run again after the previous run released the lock', async () => {
+    const app = await startApp(uniqueDatabaseUri('migrator'), [recording('m1')]);
+    const migrator = new Migrator(app);
+
+    await migrator.up();
+    await migrator.up();
+
+    expect(await ran(app)).toEqual(['m1']);
+    expect(await lock(app)).toMatchObject({ locked: false });
   });
 
   it('rejects when a migration fails, keeps what was applied before it and releases the lock', async () => {

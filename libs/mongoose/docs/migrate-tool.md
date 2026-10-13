@@ -53,5 +53,6 @@ async function bootstrap() {
 
 - A migration is a `Migration` (`up(db, client, app)`, `down` is not supported yet) wrapped with its `id` in a `MigrationWrapper`. The generated files and the collector do this for you.
 - `Migrator.up()` takes a lock in the lock collection, so only one instance of the app migrates at a time (the others skip it), runs the migrations not yet recorded in the changelog collection, in the order of the collector, and releases the lock.
+- Taking the lock is atomic (a unique index on the lock document, which `Migrator` makes sure exists, also with `autoIndex` turned off): of any number of instances starting at the same moment exactly one migrates. An instance releases only the lock it holds. If an instance dies in the middle of a run, the lock stays held and the others skip the migrations until it is released by hand (`locked: false` in the lock collection).
 - A migration recorded under a different ID than the one at its position in the collector makes the run fail: add new migrations at the end, never reorder them.
 - A failure is logged and rethrown, so `up()` rejects and the app does not start on a half-migrated database (the lock is released anyway). Migrations applied before the failing one stay recorded in the changelog. Skipping the run because another instance holds the lock is not a failure, `up()` returns normally.

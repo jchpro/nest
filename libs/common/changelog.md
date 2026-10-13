@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - Unreleased
+
+### Fixed
+
+- `GlobalExceptionHandler` no longer sends the name and the message of an unrecognized error (anything which is not an `HttpException`) to the client, as `docs/exceptions.md` always described: the response has `error: "InternalServerError"`, the `uuid` and no `message`. The details stay in the log. `CommonExceptionHandlerBehaviorHttp` keeps showing them outside of production mode. If a client relied on the message of an unexpected error, throw an `HttpException` for what it should see.
+
 ## [1.1.0] - 2026-10-13
 
 ### Added
