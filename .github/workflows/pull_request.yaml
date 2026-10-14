@@ -61,12 +61,14 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      # The binary a version of the package downloads doesn't change, so the cache is keyed on that version
+      # The binary a version of the package downloads doesn't change, so the cache is keyed on that version.
+      # It is saved on main by warm-mongodb-cache.yaml (a pull request can only read the caches of main and its own),
+      # so here it is only restored, and a miss means downloading the binary during the tests.
       - name: Resolve the mongodb-memory-server version
         id: mongo
         run: echo "version=$(node -p "JSON.parse(require('fs').readFileSync('node_modules/mongodb-memory-server-core/package.json', 'utf8')).version")" >> "$GITHUB_OUTPUT"
-      - name: Cache the MongoDB binary
-        uses: actions/cache@v6
+      - name: Restore the MongoDB binary
+        uses: actions/cache/restore@v6
         with:
           path: ${{ env.MONGOMS_DOWNLOAD_DIR }}
           key: mongodb-binaries-${{ runner.os }}-${{ steps.mongo.outputs.version }}

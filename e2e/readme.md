@@ -16,7 +16,7 @@ Every test file uses a database of its own (`uniqueDatabaseUri()` in [tests/help
 
 The first run downloads a `mongod` binary of about 210 MB to `~/.cache/mongodb-binaries` (`MONGOMS_DOWNLOAD_DIR` changes it). It is not downloaded
 by `npm ci` (`allowScripts` of the root `package.json` turns the postinstall of the package off). CI caches the directory, keyed on the version
-of `mongodb-memory-server-core`.
+of `mongodb-memory-server-core`: `warm-mongodb-cache.yaml` saves it on `main` (on a change of the lock file, twice a week, and on demand), the pull requests only restore it.
 
 ## Writing a scenario
 
