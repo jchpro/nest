@@ -1,0 +1,56 @@
+name: Warms the MongoDB binary cache for the e2e tests
+# A pull request can only restore caches of its own ref and of the base branch, and the pull_request
+# workflow never runs on main. Without this, every pull request downloads the ~210 MB `mongod` again.
+# The cache is saved on main, so all the pull requests see it.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # The version of `mongodb-memory-server`, so of the binary, only changes with the lock file
+      - package-lock.json
+      - .github/workflows/warm-mongodb-cache.yaml
+  schedule:
+    # GitHub drops caches nobody has used for 7 days
+    - cron: '17 4 * * 1,4'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: warm-mongodb-cache
+  cancel-in-progress: false
+
+jobs:
+  warm:
+    name: Warm the MongoDB binary cache
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      # The same as in the e2e job of pull_request.yaml: the directory, and the key below
+      MONGOMS_DISABLE_POSTINSTALL: 1
+      MONGOMS_DOWNLOAD_DIR: /home/runner/.cache/mongodb-binaries
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Resolve the mongodb-memory-server version
+        id: mongo
+        run: echo "version=$(node -p "JSON.parse(require('fs').readFileSync('node_modules/mongodb-memory-server-core/package.json', 'utf8')).version")" >> "$GITHUB_OUTPUT"
+      - name: Cache the MongoDB binary
+        id: cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.MONGOMS_DOWNLOAD_DIR }}
+          key: mongodb-binaries-${{ runner.os }}-${{ steps.mongo.outputs.version }}
+      # Starting a server downloads the binary when it isn't there, and proves that it runs. The cache is saved after the job.
+      - name: Download the MongoDB binary
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: node --input-type=module -e "import { MongoMemoryServer } from 'mongodb-memory-server'; const server = await MongoMemoryServer.create(); await server.stop();"

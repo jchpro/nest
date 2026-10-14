@@ -11,7 +11,7 @@ and [releasing.md](releasing.md).
 - `e2e/` – private workspace (never published, ignored by the release tooling): end-to-end tests, see [e2e/readme.md](e2e/readme.md). Each scenario boots a throwaway Nest app with the built libs and talks to it over HTTP; MongoDB is an in-memory replica set (`mongodb-memory-server`).
 - `tsconfig.libs.json` – shared compiler options (ESM, `nodenext`, decorator metadata).
 - `scripts/` – `verify-libs.mjs`, `check-versions.mjs`, `release.mjs` (+ `lib/libs.mjs`, the list of packages).
-- `.github/workflows/` – `pull_request.yaml` and one `publish-<lib>.yaml` per package.
+- `.github/workflows/` – `pull_request.yaml`, one `publish-<lib>.yaml` per package, and `warm-mongodb-cache.yaml` (saves the `mongod` binary cache of the e2e job on `main`, because a pull request can't share its caches with others).
 
 ## Commands
 
