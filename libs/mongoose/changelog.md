@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Peer range of `mongoose` is `^8.20.2 || ^9.0.0`, and of `class-validator` `^0.14.3 || ^0.15.0`.
+- Peer range of `mongoose` is `^8.20.2 || ^9.0.0`, and of `class-validator` `^0.14.3 || ^0.15.0`. class-validator 0.15 changes the signature of `@IsIBAN` (it takes an options argument), so check your usage if you validate IBANs.
 - `MongooseFilter<T>` type: the query filter of the installed Mongoose (`FilterQuery` in 8, `QueryFilter` in 9). The public typings of the soft delete plugin, `QueryExecutor` and `FilterQueryProvider` use it.
 
 ### Fixed
