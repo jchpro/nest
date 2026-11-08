@@ -52,6 +52,7 @@ async function bootstrap() {
 ### How migrations run
 
 - A migration is a `Migration` (`up(db, client, app)`, `down` is not supported yet) wrapped with its `id` in a `MigrationWrapper`. The generated files and the collector do this for you.
+- `db` and `client` are the native MongoDB driver's `Db` and `MongoClient` of the Mongoose connection, typed as `MigrationDb` and `MigrationClient`. They come from the driver your Mongoose uses (6.x with Mongoose 8, 7.x with Mongoose 9), so a migration written against one driver's API may need adjusting when you move to Mongoose 9.
 - `Migrator.up()` takes a lock in the lock collection, so only one instance of the app migrates at a time (the others skip it), runs the migrations not yet recorded in the changelog collection, in the order of the collector, and releases the lock.
 - Taking the lock is atomic (a unique index on the lock document, which `Migrator` makes sure exists, also with `autoIndex` turned off): of any number of instances starting at the same moment exactly one migrates. An instance releases only the lock it holds. If an instance dies in the middle of a run, the lock stays held and the others skip the migrations until it is released by hand (`locked: false` in the lock collection).
 - A migration recorded under a different ID than the one at its position in the collector makes the run fail: add new migrations at the end, never reorder them.
