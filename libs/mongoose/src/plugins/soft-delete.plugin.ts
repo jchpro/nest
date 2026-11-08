@@ -1,4 +1,5 @@
-import type { Aggregate, ClientSession, FilterQuery, Model, Query, Schema, UpdateResult } from 'mongoose';
+import type { Aggregate, ClientSession, Model, Query, Schema, UpdateResult } from 'mongoose';
+import type { MongooseFilter } from '../types/filter.js';
 
 declare module 'mongoose' {
   interface QueryOptions<DocType = unknown> {
@@ -58,10 +59,10 @@ export interface SoftDeleteMethods {
  * Statics added by {@link softDeletePlugin}.
  */
 export interface SoftDeleteModel<TDoc> extends Model<TDoc> {
-  softDeleteOne(filter: FilterQuery<TDoc>, options?: SoftDeleteWriteOptions): Promise<UpdateResult>;
-  softDeleteMany(filter: FilterQuery<TDoc>, options?: SoftDeleteWriteOptions): Promise<UpdateResult>;
-  restoreOne(filter: FilterQuery<TDoc>, options?: SoftDeleteWriteOptions): Promise<UpdateResult>;
-  restoreMany(filter: FilterQuery<TDoc>, options?: SoftDeleteWriteOptions): Promise<UpdateResult>;
+  softDeleteOne(filter: MongooseFilter<TDoc>, options?: SoftDeleteWriteOptions): Promise<UpdateResult>;
+  softDeleteMany(filter: MongooseFilter<TDoc>, options?: SoftDeleteWriteOptions): Promise<UpdateResult>;
+  restoreOne(filter: MongooseFilter<TDoc>, options?: SoftDeleteWriteOptions): Promise<UpdateResult>;
+  restoreMany(filter: MongooseFilter<TDoc>, options?: SoftDeleteWriteOptions): Promise<UpdateResult>;
 }
 
 const DELETED_AT = 'deletedAt';
@@ -147,6 +148,6 @@ function deletedAtCondition(onlyDeleted?: boolean) {
   return onlyDeleted ? { $ne: null } : null;
 }
 
-function restoreFilter(filter: FilterQuery<any>, writeOptions?: SoftDeleteWriteOptions): FilterQuery<any> {
+function restoreFilter(filter: MongooseFilter<any>, writeOptions?: SoftDeleteWriteOptions): MongooseFilter<any> {
   return writeOptions?.deletedAt ? { ...filter, [DELETED_AT]: writeOptions.deletedAt } : filter;
 }

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - Unreleased
+
+### Added
+
+- Peer range of `mongoose` is `^8.20.2 || ^9.0.0`, and of `class-validator` `^0.14.3 || ^0.15.0`.
+- `MongooseFilter<T>` type: the query filter of the installed Mongoose (`FilterQuery` in 8, `QueryFilter` in 9). The public typings of the soft delete plugin, `QueryExecutor` and `FilterQueryProvider` use it.
+
+### Fixed
+
+- `TransformMongoIdFactory` recognizes an `ObjectId` by `_bsontype` instead of `instanceof`, so ids no longer disappear from serialized DTOs when the app has more than one copy of Mongoose or `bson`.
+- Schema reference discovery reads array item types from `embeddedSchemaType`, `caster` is gone in Mongoose 9.
+
+### Known issues
+
+- With Mongoose 9, `@nestjs/mongoose` (12.0.1) fails on `@Prop({ type: mongoose.Schema.Types.ObjectId })` (`Cannot set properties of undefined`), which is upstream and not in this package.
+
 ## [2.0.1] - 2026-10-13
 
 ### Fixed

@@ -1,7 +1,7 @@
-import { type FilterQuery } from 'mongoose';
+import type { MongooseFilter } from './filter.js';
 
 export interface FilterQueryProvider<TRaw = any> {
-  getFilters(): FilterQuery<TRaw>;
+  getFilters(): MongooseFilter<TRaw>;
 }
 
 export interface CrudOptions {

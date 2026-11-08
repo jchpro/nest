@@ -13,7 +13,7 @@ export class QueryService {
     private readonly crudOptions?: CrudOptions
   ) { }
 
-  prepare<TDoc extends Document, TRaw = any>(model: Model<TDoc>,
+  prepare<TDoc extends Document, TRaw = any>(model: Model<TDoc, any, any, any, any, any>,
                                              data: QueryData,
                                              filtersProvider?: FilterQueryProvider<TRaw>,
                                              project?: ProjectionType<TRaw>,
@@ -30,7 +30,7 @@ export class QueryService {
     );
   }
 
-  execute<TDoc extends Document, TRaw = any>(model: Model<TDoc>,
+  execute<TDoc extends Document, TRaw = any>(model: Model<TDoc, any, any, any, any, any>,
                                              data: QueryData,
                                              filtersProvider?: FilterQueryProvider<TRaw>,
                                              project?: ProjectionType<TRaw>,

@@ -13,6 +13,7 @@ export * from './services/schema-references.service.js';
 export * from './services/transactional.service.js';
 
 export * from './types/crud.js';
+export * from './types/filter.js';
 export * from './types/dtos.js';
 export * from './types/migrations.js';
 export * from './types/schemas.js';
