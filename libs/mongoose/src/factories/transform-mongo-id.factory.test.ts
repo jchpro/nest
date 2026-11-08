@@ -113,4 +113,28 @@ describe('TransformMongoIdFactory', () => {
     expect(result).toEqual(idHex);
   });
 
+
+  it('should transform an ObjectId which comes from another copy of Mongoose', () => {
+    // Given
+    const transformSpy = vi.spyOn(ClassTransformerModule, 'Transform');
+    TransformMongoIdFactory()();
+    const transformFn = transformSpy.mock.calls[0][0] as (params: TransformFnParams) => any;
+    const idHex = randomBytes(12).toString('hex');
+    class ForeignObjectId {
+      readonly _bsontype = 'ObjectId';
+      toString() { return idHex; }
+    }
+
+    // When
+    const result = transformFn({
+      value: null,
+      obj: { _id: new ForeignObjectId() },
+      key: '_id',
+      type: null as any,
+      options: null as any
+    });
+
+    // Then
+    expect(result).toEqual(idHex);
+  });
 });
