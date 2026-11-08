@@ -44,7 +44,7 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-    "class-validator": "^0.14.3",
+    "class-validator": "^0.14.3 || ^0.15.0",
     "nestjs-i18n": "^10.8.5"
   }
 }

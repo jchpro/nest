@@ -25,7 +25,7 @@ export function extractSchemaRefs(
 
       // Array – caster may be ref or subdocument
       if (schematype instanceof mongoose.Schema.Types.Array) {
-        const caster = schematype.caster;
+        const caster = (schematype as any).embeddedSchemaType ?? (schematype as any).caster;
 
         // Array of refs
         if (caster?.options?.ref) {

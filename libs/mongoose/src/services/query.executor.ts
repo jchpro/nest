@@ -1,5 +1,6 @@
 import { type QueryData, QueryResult } from '@jchpro/nest-common';
-import type { Document, FilterQuery, Model, ProjectionType, Query, QueryOptions } from 'mongoose';
+import type { MongooseFilter } from '../types/filter.js';
+import type { Document, Model, ProjectionType, Query, QueryOptions } from 'mongoose';
 import { type CrudOptions, type FilterQueryProvider } from '../types/crud.js';
 
 /**
@@ -9,12 +10,12 @@ import { type CrudOptions, type FilterQueryProvider } from '../types/crud.js';
 export class QueryExecutor<TDoc extends Document, TRaw = any> {
 
   readonly maxLimit?: number;
-  readonly filters: FilterQuery<TRaw>;
+  readonly filters: MongooseFilter<TRaw>;
   readonly queryOptions: QueryOptions<TDoc>;
   readonly projection?: ProjectionType<TRaw>;
 
   constructor(
-    readonly model: Model<TDoc>,
+    readonly model: Model<TDoc, any, any, any, any, any>,
     readonly data: QueryData,
     options?: {
       readonly filtersProvider?: FilterQueryProvider<TRaw>;
@@ -26,7 +27,7 @@ export class QueryExecutor<TDoc extends Document, TRaw = any> {
     const { maxLimit } = options?.crud ?? {};
     this.maxLimit = maxLimit;
     this.projection = options?.project;
-    this.filters = options?.filtersProvider?.getFilters() ?? {};
+    this.filters = options?.filtersProvider?.getFilters() ?? ({} as MongooseFilter<TRaw>);
     this.queryOptions = this.resolveQueryOptions(options?.other);
   }
 

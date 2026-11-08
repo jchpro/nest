@@ -1,6 +1,12 @@
 import { Transform } from 'class-transformer';
 import type { TransformOptions } from 'class-transformer';
-import mongoose from 'mongoose';
+
+/**
+ * Duck-typed instead of `instanceof`, which fails when the app has more than one copy of Mongoose (or `bson`).
+ */
+function isObjectId(value: unknown): value is { toString(): string } {
+  return typeof value === 'object' && !!value && (value as { _bsontype?: unknown })._bsontype === 'ObjectId';
+}
 
 /**
  * Returns transform decorator which fixes a bug which causes the MongoID to be incorrectly serialized to string.
@@ -11,12 +17,12 @@ export function TransformMongoIdFactory(options?: TransformMongoIdOptions, extra
   return function TransformMongoId() {
     return Transform(params => {
       const value: unknown = params.obj[params.key];
-      if (value instanceof mongoose.Types.ObjectId) {
+      if (isObjectId(value)) {
         return value.toString();
       }
       if (typeof value === 'object' && !!value) {
-        if (idField in value && (value as Record<string, any>)[idField] instanceof mongoose.Types.ObjectId) {
-          return (value[idField as keyof typeof value] as mongoose.Types.ObjectId).toString();
+        if (idField in value && isObjectId((value as Record<string, any>)[idField])) {
+          return (value[idField as keyof typeof value] as { toString(): string }).toString();
         }
       }
     }, extraOptions);

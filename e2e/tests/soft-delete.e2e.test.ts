@@ -38,7 +38,7 @@ class TasksController {
   @ApiQueryResultResponse(Task, { map: (task: TaskDocument) => ({ id: task.id, title: task.title, deleted: !!task.deletedAt }) })
   list(@Query('deleted') deleted?: 'only' | 'with') {
     const other = deleted === 'only' ? { onlyDeleted: true } : deleted === 'with' ? { withDeleted: true } : undefined;
-    return this.queryService.execute(this.taskModel, { sortBy: 'title', sortOptions: ['title'] }, undefined, undefined, other);
+    return this.queryService.execute<TaskDocument>(this.taskModel, { sortBy: 'title', sortOptions: ['title'] }, undefined, undefined, other);
   }
 
   @Get('count')

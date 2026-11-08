@@ -58,7 +58,7 @@ export class ReferencingDocsLookupService {
       infos.push({
         name: info.schema,
         count: docs.length,
-        ids: docs.map(doc => (doc[this.idField] as any).toString())
+        ids: docs.map(doc => ((doc as Record<string, any>)[this.idField]).toString())
       });
     }
     return infos;

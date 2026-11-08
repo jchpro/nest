@@ -66,7 +66,7 @@
     "@nestjs/throttler": "^6.7.0",
     "bcrypt": "^5.1.1 || ^6.0.0",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.3",
+    "class-validator": "^0.14.3 || ^0.15.0",
     "morgan": "^1.10.1",
     "rxjs": "^7.8.2"
   },
