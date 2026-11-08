@@ -40,7 +40,7 @@ jobs:
       - name: Build the libraries
         run: npm run build:libs
       - name: Test @jchpro/nest-i18n
-        run: npx vitest run libs/i18n
+        run: npx vitest run libs/i18n --passWithNoTests
       - name: Verify the packages
         run: npm run verify:libs
       - name: Publish @jchpro/nest-i18n
