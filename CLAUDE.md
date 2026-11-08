@@ -1,8 +1,6 @@
 # nest — working notes for Claude
 
-Monorepo of the `@jchpro/nest-*` libraries (Nest.js 12), published to npm. Maintained solo by Jakub; the
-libraries are reused by his apps (e.g. `jchpro/websites-api`) and by customer apps. See [readme.md](readme.md)
-and [releasing.md](releasing.md).
+Monorepo of the `@jchpro/nest-*` libraries (Nest.js 12), published to npm. Maintained solo by Jakub. See [readme.md](readme.md) and [releasing.md](releasing.md).
 
 ## Layout
 
