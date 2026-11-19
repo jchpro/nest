@@ -30,10 +30,10 @@ That's it. Your errors will be logged and the response object for thrown `HttpEx
 }
 ```
 
-Log entry:
+Log entry (a 404 is logged at `DEBUG`, other recognized errors below 500 at `WARN`, so it only shows up when the logger has debug enabled):
 
 ```text
-[Nest] 3052  - 01.02.2024, 18:38:49   ERROR [GlobalExceptionHandler] NotFoundException: Not Found
+[Nest] 3052  - 01.02.2024, 18:38:49   DEBUG [GlobalExceptionHandler] NotFoundException: Not Found
 ```
 
 ...or, for everything else...
@@ -107,7 +107,22 @@ What's important is that you return `ExceptionHandlingInstructions` in the `inst
 
 - `GlobalExceptionHandlerOptions` (third argument of `setup`): `logger` replaces the default logger, `unknownErrorName` is the `error` name used for thrown values that aren't errors (`"Unknown"` by default; a behavior can override it)
 - `CaughtExceptionHttpContext` is what a behavior's `instruct` receives: the `host`, the `exception`, whether it was `recognized` (an `HttpException`), and `data` (`CaughtExceptionHttpData`: `error`, `message`, `details`, `statusCode`, `path`, `timestamp`, `uuid`, `stack`). Mutate `data` to change the response, e.g. to translate the message. The generic `CaughtExceptionContext` and `CaughtExceptionData` are the base of it
-- `ExceptionHandlingInstructions` is what `instruct` returns: `log` (`ExceptionLogArguments`, the message and optionally the stack trace for the logger) and `respondWith` (the response body)
+- `ExceptionHandlingInstructions` is what `instruct` returns: `log` (`ExceptionLogArguments`, the message and optionally the stack trace for the logger), `level` (`ExceptionLogLevel`, the logger method to use, `error` when omitted) and `respondWith` (the response body)
+
+### Log levels
+
+`ExceptionHandlerBehaviorHttp` logs a recognized 404 at `debug` (scanners probing a public host would otherwise fill the log with errors, and the request logger records the request anyway), other recognized errors below 500 at `warn`, and recognized 5xx and every unrecognized error at `error`.
+Override `logLevelFor` to change that, e.g. to get `error` for everything as before:
+
+```ts
+class MyBehavior extends CommonExceptionHandlerBehaviorHttp {
+  protected logLevelFor(): ExceptionLogLevel {
+    return 'error';
+  }
+}
+```
+
+A custom logger that has no `debug` or `verbose` method doesn't get those entries, and `fatal` falls back to `error`.
 
 ### Supported contexts
 

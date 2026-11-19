@@ -25,6 +25,7 @@ export class CommonExceptionHandlerBehaviorHttp extends ExceptionHandlerBehavior
   }): ExceptionHandlingInstructions {
     return {
       log: this.unrecognizedLogArguments({ logMessage, data, exception }),
+      level: this.logLevelFor({ exception, recognized: false, data }),
       respondWith: this.prepareResponseObject(this.productionMode ? this.withoutDetails(data) : data, {
         uuid: this.productionMode,
         stack: !this.productionMode

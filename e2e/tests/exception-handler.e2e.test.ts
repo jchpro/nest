@@ -1,7 +1,7 @@
 import { CommonExceptionHandlerBehaviorHttp, GlobalExceptionHandler } from '@jchpro/nest-common';
-import { Body, Controller, Get, NotFoundException, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, NotFoundException, Post, ValidationPipe } from '@nestjs/common';
 import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createApp } from './helpers/app.js';
 
 class CreateDogDto {
@@ -26,6 +26,11 @@ class ThrowingController {
     throw new NotFoundException('No such dog');
   }
 
+  @Get('forbidden')
+  forbidden() {
+    throw new ForbiddenException();
+  }
+
   @Get('unknown-error')
   unknownError() {
     throw new Error('database exploded');
@@ -37,10 +42,10 @@ class ThrowingController {
   }
 }
 
-function appWith(productionMode: boolean) {
+function appWith(productionMode: boolean, logger?: object) {
   return createApp({ controllers: [ThrowingController] }, (app) => {
     app.useGlobalPipes(new ValidationPipe());
-    GlobalExceptionHandler.setup(app, { http: new CommonExceptionHandlerBehaviorHttp(productionMode) });
+    GlobalExceptionHandler.setup(app, { http: new CommonExceptionHandlerBehaviorHttp(productionMode) }, logger ? { logger: logger as any } : undefined);
   });
 }
 
@@ -147,6 +152,20 @@ describe('GlobalExceptionHandler', () => {
       timestamp: expect.any(String),
       uuid: expect.any(String),
     });
+    await app.close();
+  });
+
+  it('logs a 404 at debug, other 4xx at warn and everything unexpected at error', async () => {
+    const logger = { log: vi.fn(), debug: vi.fn(), warn: vi.fn(), error: vi.fn() };
+    const { app, http } = await appWith(true, logger);
+
+    await http.get('/no-such-route');
+    expect(logger.debug).toHaveBeenCalledTimes(1);
+    await http.get('/forbidden');
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.error).not.toHaveBeenCalled();
+    await http.get('/unknown-error');
+    expect(logger.error).toHaveBeenCalledTimes(1);
     await app.close();
   });
 });

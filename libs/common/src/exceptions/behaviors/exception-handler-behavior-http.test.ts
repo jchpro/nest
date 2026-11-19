@@ -38,12 +38,49 @@ describe('ExceptionHandlerBehaviorHttp', () => {
     // Then
     expect(instructions).toEqual({
       log: ['error: message'],
+      level: 'debug',
       respondWith: {
         error: 'error',
         message: 'message',
         timestamp: 'ts',
         statusCode: 404
       }
+    });
+  });
+
+  describe('log level', () => {
+    function levelFor(exception: unknown, recognized: boolean, statusCode: number, b = behavior) {
+      return b.instruct(({
+        host: {} as any,
+        exception,
+        recognized,
+        data: { error: 'e', message: 'm', timestamp: 'ts', statusCode }
+      } as CaughtExceptionHttpContext)).level;
+    }
+
+    it('should be debug for 404', () => {
+      expect(levelFor(new NotFoundException(), true, 404)).toBe('debug');
+    });
+
+    it.each([400, 401, 403, 409, 422, 429])('should be warn for recognized %s', (status) => {
+      expect(levelFor(new HttpException('x', status), true, status)).toBe('warn');
+    });
+
+    it.each([500, 502, 503])('should be error for recognized %s', (status) => {
+      expect(levelFor(new HttpException('x', status), true, status)).toBe('error');
+    });
+
+    it('should be error for unrecognized errors', () => {
+      expect(levelFor(new Error('boom'), false, 500)).toBe('error');
+    });
+
+    it('should be what an overridden logLevelFor returns', () => {
+      class Custom extends ExceptionHandlerBehaviorHttp {
+        protected logLevelFor(): 'error' {
+          return 'error';
+        }
+      }
+      expect(levelFor(new NotFoundException(), true, 404, new Custom())).toBe('error');
     });
   });
 
@@ -139,6 +176,7 @@ describe('ExceptionHandlerBehaviorHttp', () => {
     // Then
     expect(instructions).toEqual({
       log: ['[uuid] error: message', 'stack'],
+      level: 'error',
       respondWith: {
         error: 'InternalServerError',
         uuid: 'uuid',

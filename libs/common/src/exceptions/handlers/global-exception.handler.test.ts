@@ -208,4 +208,49 @@ describe('GlobalExceptionHandler', () => {
     });
     expect(replySpy).toHaveBeenCalledWith({}, { thisIs: 'exception' }, 500);
   });
+
+  describe('log level', () => {
+    const host: any = {
+      getType: () => 'http',
+      switchToHttp: () => ({ getRequest: () => ({}), getResponse: () => ({}) })
+    };
+    const exception = { name: 'error', message: 'message', stack: 'stack', getStatus: () => 400 };
+
+    function handleWith(level: ExceptionHandlingInstructions['level'], logger: object) {
+      GlobalExceptionHandler.setup(
+        mockApp,
+        { http: new Behavior(true, { log: ['entry'], level, respondWith: {} }) },
+        { logger: { log: () => {}, ...logger } as any }
+      );
+      handler.catch(exception, host);
+    }
+
+    it('should log with the logger method named by the instructions', () => {
+      for (const level of ['log', 'debug', 'verbose', 'warn', 'error', 'fatal'] as const) {
+        const logger = { log: vi.fn(), debug: vi.fn(), verbose: vi.fn(), warn: vi.fn(), error: vi.fn(), fatal: vi.fn() };
+        handleWith(level, logger);
+        const used = Object.entries(logger)
+          .filter(([, fn]) => fn.mock.calls.some(c => c[0] === 'entry'))
+          .map(([name]) => name);
+        expect(used).toEqual([level]);
+      }
+    });
+
+    it('should log at error when the instructions have no level', () => {
+      const logger = { error: vi.fn(), warn: vi.fn() };
+      handleWith(undefined, logger);
+      expect(logger.error).toHaveBeenCalledWith('entry');
+      expect(logger.warn).not.toHaveBeenCalled();
+    });
+
+    it('should fall back to error for fatal and skip debug and verbose when the logger lacks them', () => {
+      const logger = { error: vi.fn() };
+      handleWith('fatal', logger);
+      expect(logger.error).toHaveBeenCalledWith('entry');
+      logger.error.mockClear();
+      handleWith('debug', logger);
+      handleWith('verbose', logger);
+      expect(logger.error).not.toHaveBeenCalled();
+    });
+  });
 });

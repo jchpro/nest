@@ -1,7 +1,7 @@
 import { type CaughtExceptionHttpContext, type CaughtExceptionHttpData } from '../types/caught-exception-http-context.js';
-import { type ExceptionHandlingInstructions } from '../types/exception-handling.instructions.js';
+import { type ExceptionHandlingInstructions, type ExceptionLogLevel } from '../types/exception-handling.instructions.js';
 import { ExceptionHandlerBehavior } from './exception-handler-behavior.js';
-import { HttpException } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 /**
  * Behavior for exception handler in HTTP context:
@@ -12,7 +12,9 @@ import { HttpException } from '@nestjs/common';
  *   - unrecognized errors will always have UUID attached to the response object, and logged;
  *   - the response object of an unrecognized error doesn't reveal what the error was: its `error` is the
  *     {@link unknownErrorName} and it has no `message` (both are in the log);
- *   - stacktrace will never be attached to the response object.
+ *   - stacktrace will never be attached to the response object;
+ *   - recognized errors are logged at `debug` level for 404, at `warn` for other statuses below 500 and
+ *     at `error` otherwise, unrecognized errors always at `error` (see {@link logLevelFor}).
  */
 export class ExceptionHandlerBehaviorHttp extends ExceptionHandlerBehavior<CaughtExceptionHttpContext, HttpException> {
 
@@ -38,11 +40,24 @@ export class ExceptionHandlerBehaviorHttp extends ExceptionHandlerBehavior<Caugh
   }): ExceptionHandlingInstructions {
     return {
       log: this.recognizedLogArguments({ logMessage, data, exception }),
+      level: this.logLevelFor({ exception, recognized: true, data }),
       respondWith: this.prepareResponseObject(
         { ...data, details: data.details ?? this.extractDetails(exception) } as CaughtExceptionHttpData,
         { uuid: false, stack: false }
       )
     };
+  }
+
+  /**
+   * Level to log the exception at. Client errors are not failures of the service: a 404 is `debug` (the request
+   * logger records the request anyway, and scanners probe public hosts all day), other statuses below 500 are `warn`.
+   * Everything else, including every unrecognized error, is `error`. Override to restore `error` for all, or to tune it.
+   */
+  protected logLevelFor({ recognized, data }: Pick<CaughtExceptionHttpContext, 'exception' | 'recognized' | 'data'>): ExceptionLogLevel {
+    if (!recognized || data.statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      return 'error';
+    }
+    return data.statusCode === HttpStatus.NOT_FOUND ? 'debug' : 'warn';
   }
 
   /**
@@ -69,6 +84,7 @@ export class ExceptionHandlerBehaviorHttp extends ExceptionHandlerBehavior<Caugh
   }): ExceptionHandlingInstructions {
     return {
       log: this.unrecognizedLogArguments({ logMessage, data, exception }),
+      level: this.logLevelFor({ exception, recognized: false, data }),
       respondWith: this.prepareResponseObject(this.withoutDetails(data), { uuid: true, stack: false })
     };
   }
