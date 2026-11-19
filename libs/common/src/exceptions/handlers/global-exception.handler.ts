@@ -16,7 +16,7 @@ import { type GlobalExceptionHandlerOptions } from '../types/global-exception-ha
 import { type CaughtExceptionHttpContext } from '../types/caught-exception-http-context.js';
 import { type CaughtExceptionData } from '../types/caught-exception-context.js';
 import { ExceptionHandlerBehaviorHttp } from '../behaviors/exception-handler-behavior-http.js';
-import { type ExceptionLogArguments } from '../types/exception-handling.instructions.js';
+import { type ExceptionLogArguments, type ExceptionLogLevel } from '../types/exception-handling.instructions.js';
 import { ExceptionHandlerBehavior } from '../behaviors/exception-handler-behavior.js';
 
 @Catch()
@@ -111,12 +111,22 @@ export class GlobalExceptionHandler
       };
     }
     const instructions = this.behaviorHttp!.instruct(caught);
-    this.log(instructions.log);
+    this.log(instructions.log, instructions.level ?? 'error');
     this.httpAdapter.reply(host.getResponse(), instructions.respondWith, caught.data.statusCode);
   }
 
-  private log(args: ExceptionLogArguments): void {
-    this.logger.error(...args);
+  /**
+   * The optional methods of `LoggerService` may be missing in a custom logger: `fatal` falls back to `error`,
+   * `debug` and `verbose` are then skipped (those are the entries meant to be dropped).
+   */
+  private log(args: ExceptionLogArguments, level: ExceptionLogLevel): void {
+    if (level === 'fatal') {
+      (this.logger.fatal ?? this.logger.error).call(this.logger, ...args);
+    } else if (level === 'debug' || level === 'verbose') {
+      this.logger[level]?.(...args);
+    } else {
+      this.logger[level](...args);
+    }
   }
 
   private static getTimestamp(): string {

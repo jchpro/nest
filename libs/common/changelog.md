@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - Unreleased
+
+### Added
+
+- `ExceptionHandlingInstructions` has an optional `level` (`ExceptionLogLevel`): the logger method `GlobalExceptionHandler` logs the exception with, `error` when omitted.
+- `ExceptionHandlerBehaviorHttp` has a protected `logLevelFor`, used for the `level` of both recognized and unrecognized errors.
+
+### Changed
+
+- Recognized errors are no longer logged at `error` by default: a 404 is logged at `debug`, other statuses below 500 at `warn`. Recognized 5xx and unrecognized errors stay at `error`. Alerts or filters keyed on `ERROR` for 4xx will go quiet. To restore the old behavior, override `logLevelFor` in your behavior and return `'error'` (see [exceptions](docs/exceptions.md)).
+
 ## [1.3.0] - 2026-11-08
 
 ### Added

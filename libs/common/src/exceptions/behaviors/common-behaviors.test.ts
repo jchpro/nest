@@ -34,6 +34,7 @@ describe('CommonExceptionHandlerBehaviorHttp', () => {
      // Then
      expect(instructions).toEqual({
        log: ['[uuid] error: message', 'stack'],
+       level: 'error',
        respondWith: {
          error: 'InternalServerError',
          uuid: 'uuid',
@@ -53,6 +54,7 @@ describe('CommonExceptionHandlerBehaviorHttp', () => {
      // Then
      expect(instructions).toEqual({
        log: ['error: message', 'stack'],
+       level: 'error',
        respondWith: {
          error: 'error',
          message: 'message',
